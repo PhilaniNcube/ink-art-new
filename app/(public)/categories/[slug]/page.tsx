@@ -1,4 +1,4 @@
-import { fetchCategoryBySlug } from '@/utils/queries/categories'
+
 import React from 'react'
 import CategoryDetails from '../_components/category-details'
 import CategoryDetailsSkeleton from '../_components/category-details-skeleton'
