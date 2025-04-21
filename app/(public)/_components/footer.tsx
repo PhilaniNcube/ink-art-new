@@ -94,11 +94,11 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">support@inkart.com</span>
+                <span className="text-sm text-muted-foreground">info@inkart.store</span>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">+1 (555) 123-4567</span>
+                <span className="text-sm text-muted-foreground">+27 65 944 6989</span>
               </div>
             </div>
           </div>
