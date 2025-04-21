@@ -79,7 +79,7 @@ const BlogArticlePage = async ({ params }: { params: Promise<{ id: number }> }) 
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="max-w-4xl mx-auto">
+      <div className="w-full">
         <Link
           href="/blog"
           className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-8 transition-colors"
