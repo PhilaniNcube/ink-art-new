@@ -32,7 +32,7 @@ const BlogPage = async () => {
                         <Link href={`/blog/${posts[0].id}`}>
                             <div className="relative aspect-[16/9] w-full">
                                 <Image
-                                    src={`/media/${posts[0].image.url}`}
+                                    src={posts[0].image.url!}
                                     alt={posts[0].title}
                                     fill
                                     className="object-cover transition-transform duration-300 hover:scale-105"

@@ -10,7 +10,7 @@ const BlogCard = ({ post }: { post: Blog }) => {
             <Link href={`/blog/${post.id}`}>
                 <div className="relative aspect-[4/3] w-full overflow-hidden">
                     <Image
-                        src={`/media/${post.image.url}`}
+                        src={post.image.url!}
                         alt={post.image.alt}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

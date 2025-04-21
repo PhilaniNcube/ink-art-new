@@ -11,7 +11,7 @@ export interface Media {
   alt: string;
   updatedAt: string;
   createdAt: string;
-  url?: string;
+  url: string;
   thumbnailUrl?: string;
   filename?: string;
   mimeType?: string;
