@@ -36,7 +36,7 @@ export default buildConfig({
       collections: {
         media: true,
       },
-      clientUploads: true,
+      clientUploads: false,
       options: {
         token: process.env.UPLOADTHING_TOKEN,
         acl: 'public-read',
