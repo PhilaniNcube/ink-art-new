@@ -88,7 +88,7 @@ const BlogArticlePage = async ({ params }: { params: Promise<{ id: number }> }) 
         </div>
 
          <div className="relative aspect-[16/9] w-full mb-8 rounded-lg overflow-hidden">
-          <Image src={post.image.url || "/placeholder.svg"} alt={post.title} fill className="object-cover" priority />
+          <Image src={post.image.url} alt={post.image.alt} fill className="object-cover" priority />
         </div>
 
         <div className="prose max-w-none text-muted-foreground">
