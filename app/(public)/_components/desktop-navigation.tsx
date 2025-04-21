@@ -23,13 +23,13 @@ const DesktopNavigation = async () => {
                 <div className="">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
-                            <Link href='/' className="text-2xl font-bold">
+                            <Link href='/' className="">
                                 <Image
                                     src="/images/ink-art.webp"
                                     alt="Logo"
                                     width={209}
                                     height={136}
-                                    className="w-auto"
+                                    className="w-28 object-cover"
                                 />
                             </Link>
                             <MegaMenu categories={categories} featuredProducts={featuredProducts} />
