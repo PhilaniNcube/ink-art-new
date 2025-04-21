@@ -8,6 +8,7 @@ import Link from 'next/link'
 import React from 'react'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import { metadata } from '../../layout'
+import { notFound } from 'next/navigation'
 
 export async function generateMetadata({ params }: { params: Promise<{ id: number }> }) {
   const { id } = await params
@@ -20,17 +21,21 @@ export async function generateMetadata({ params }: { params: Promise<{ id: numbe
     }
   }
 
+  const imageUrl = post.image?.url
+    ? `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL}${post.image.url}`
+    : undefined
+
+
   return {
     metadataBase: process.env.VERCEL_URL,
     generator: 'Next.js',
     title: post.title,
     description: post.excerpt,
-    keywords: post.excerpt.split(' ').join(','),
     robots: {
       index: true,
       follow: true,
       nocache: false,
-      googleBot:{
+      googleBot: {
         index: true,
         follow: true,
         'max-snippet': '-1',
@@ -41,19 +46,19 @@ export async function generateMetadata({ params }: { params: Promise<{ id: numbe
     openGraph: {
       title: post.title,
       description: post.excerpt,
-      url: `${process.env.VERCEL_URL}/blog/${post.id}`,
+      url: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL}/blog/${post.id}`,
       type: 'article',
-      publishedTime: post.publishedDate, 
-      images: [
+      publishedTime: post.publishedDate,
+      images: imageUrl ? [
         {
-          url: `${process.env.VERCEL_URL}${post.image.url}` ,
-          alt: post.title,
-          width: post.image.width || 1200,
-          height: post.image.height || 630,
+          url: imageUrl,
+          alt: post.image?.alt || post.title,
+          width: post.image?.width || 1200,
+          height: post.image?.height || 630,
         },
-      ],
+      ] : undefined,
     },
-    
+
   }
 }
 
@@ -64,36 +69,62 @@ const BlogArticlePage = async ({ params }: { params: Promise<{ id: number }> }) 
   const post: Blog | null = await getBlogPost(id)
 
   if (!post) {
-    return <div className="text-center">No blog post available</div>
+    notFound()
   }
 
+  const formattedDate = post.publishedDate
+    ? format(new Date(post.publishedDate), "PPP")
+    : "No date available"
   console.log(post)
 
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto">
-        <Link href="/blog" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-8">
-          <ArrowLeft className="mr-2" />
+        <Link
+          href="/blog"
+          className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-8 transition-colors"
+          aria-label="Back to blog listing"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Blog
         </Link>
 
-        <div className="mb-6">
-          <span className="inline-block bg-primary/10 text-primary px-3 py-1 text-sm font-medium rounded-full mb-4">
-            {format(post.publishedDate, "PPP")}
-          </span>
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">{post.title}</h1>
-          <div className="flex items-center text-muted-foreground mb-8">
+        <article>
+          <header className="mb-8">
+        
 
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
+              {post.title}
+            </h1>
+
+            {post.excerpt && (
+              <p className="text-xl text-muted-foreground mb-6">
+                {post.excerpt}
+              </p>
+            )}
+          </header>
+
+          {post.image?.url && (
+            <figure className="relative aspect-[16/9] w-full mb-10 rounded-lg overflow-hidden">
+              <Image
+                src={post.image.url}
+                alt={post.image.alt || post.title}
+                width={post.image.width}
+                height={post.image.height}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+                className="object-cover"
+                priority
+                quality={90}
+              />
+            </figure>
+          )}
+
+          <div className="prose prose-lg md:prose-xl max-w-none">
+            <RichText data={post.content} />
           </div>
-        </div>
 
-         <div className="relative aspect-[16/9] w-full mb-8 rounded-lg overflow-hidden">
-          <Image src={post.image.url} alt={post.image.alt} fill className="object-cover" priority />
-        </div>
-
-        <div className="prose max-w-none text-muted-foreground">
-          <RichText data={post.content} />
-          </div>
+  
+        </article>
       </div>
     </div>
   )
