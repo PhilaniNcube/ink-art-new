@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "noEmit": false,
+    "outDir": "./dist",
+    "paths": {
+      "@payload-config": ["./payload.config.ts"]
+    }
+  },
+  "include": [
+    "payload.config.ts",
+    "collections/**/*.ts"
+  ]
+}

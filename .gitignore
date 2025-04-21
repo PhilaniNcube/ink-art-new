@@ -13,6 +13,9 @@
 # testing
 /coverage
 
+# github copilot
+/.github
+
 # next.js
 /.next/
 /out/
