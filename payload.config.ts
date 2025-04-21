@@ -5,6 +5,7 @@ import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { Media } from './collections/Media'
 import { Blog } from './collections/Blog'
+import { uploadthingStorage } from '@payloadcms/storage-uploadthing'
 
 export default buildConfig({
   // If you'd like to use Rich Text, pass your editor here
@@ -30,4 +31,17 @@ export default buildConfig({
   // This is optional - if you don't need to do these things,
   // you don't need it!
   sharp,
+  plugins: [
+      uploadthingStorage({
+      collections: {
+        media: true,
+      },
+      clientUploads: true,
+      options: {
+        token: process.env.UPLOADTHING_TOKEN,
+        acl: 'public-read',
+        
+      },
+    }),
+  ]
 })
