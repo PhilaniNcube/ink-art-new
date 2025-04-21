@@ -1,11 +1,10 @@
 import React, { Suspense } from 'react'
 import ProductsFilter from '../_components/products-filter'
 import FilteredProducts from './_components/filtered-products'
-import { SearchParams } from 'nuqs'
 import FeaturedProductsSkeleton from '../_components/featured-products-skeleton'
+import { SearchParams } from '@/utils/supabase/types'
 
 const ProductsPage = async (props: {
-
   searchParams: SearchParams
 }) => {
 
