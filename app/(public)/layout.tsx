@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react'
 import DesktopNavigation from './_components/desktop-navigation'
 import { Geist } from "next/font/google";
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
-import '@/app/globals.css' 
+import '@/app/globals.css'
 import Footer from './_components/footer';
 
 const defaultUrl = process.env.VERCEL_URL
@@ -22,16 +22,14 @@ const geistSans = Geist({
 
 const PublicLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <html lang="en" className={geistSans.className} suppressHydrationWarning>
-      <body className="bg-background text-foreground">
-        <NuqsAdapter>
-          
-          <DesktopNavigation />
-          {children}
-          <Footer />
-        </NuqsAdapter>
-      </body>
-    </html>
+    <div suppressHydrationWarning className="bg-background text-foreground">
+      <NuqsAdapter>
+
+        <DesktopNavigation />
+        {children}
+        <Footer />
+      </NuqsAdapter>
+    </div>
   )
 }
 
