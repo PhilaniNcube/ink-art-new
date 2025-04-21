@@ -6,7 +6,7 @@ export async function getBlogPosts() {
 
     try {
 
-        const req = await fetch(`${process.env.VERCEL_URL}/api/blog?limit=3`, {
+        const req = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/blog?limit=3`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ export async function getAllBlogPosts() {
     
         try {
     
-            const req = await fetch(`${process.env.VERCEL_URL}/api/blog`, {
+            const req = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/blog`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ export async function getBlogPost(id: number) {
 
     try {
 
-        const req = await fetch(`${process.env.VERCEL_URL}/api/blog/${id}`, {
+        const req = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/blog/${id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ export async function getBlogPostsBySlug(slug: string) {
 
     try {
 
-        const req = await fetch(`${process.env.VERCEL_URL}/api/blog?slug=${slug}`, {
+        const req = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/blog?slug=${slug}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
