@@ -26,11 +26,13 @@ const SearchSheet = () => {
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-                <Search className="h-4 w-4" />
+                <Search className="cursor-pointer" />
             </SheetTrigger>
             <SheetContent side="top" >
                 <div className='flex flex-col gap-4'>
                     <SheetTitle className='text-2xl font-bold'>Search</SheetTitle>
+                    <p className='text-muted-foreground'>Search for products</p>
+                    <div className='flex items-center gap-2'>
                     <Input value={search} onChange={(e) => setSearch(e.target.value)} name='search' type="search" placeholder='Search for products' className='input input-bordered w-full' />
                     <div className='flex gap-4'>
                         <Button variant='outline' onClick={() => {
@@ -41,6 +43,7 @@ const SearchSheet = () => {
                             router.push(`/search?query=${search}`);
                             setIsOpen(false);
                         }}>Search</Button>
+                    </div>
                     </div>
                 </div>
             </SheetContent>
