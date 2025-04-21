@@ -15,26 +15,21 @@ const AboutPage = () => {
         {/* Hero Section */}
         <div className="mb-16 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">Our Story</h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            The journey from Lesotho to creating beautiful art for homes across the world
-          </p>
+         
         </div>
 
         {/* Founder Story */}
         <section className="mb-20">
           <div className="grid md:grid-cols-2 gap-10 items-center">
             <div>
-              <h2 className="text-3xl font-bold mb-4">Meet Nyakallo</h2>
+             
               <div className="space-y-4 text-base md:text-lg">
                 <p>
-                  Ink Art was born from the creative vision of Nyakallo, a passionate artist who journeyed from the mountainous kingdom of Lesotho to build her dreams in vibrant South Africa.
+                 {/* General about us story */}
+                  Ink Art is a canvas art store founded by Nyakallo, a passionate artist and entrepreneur from Lesotho. With a degree in economics, Nyakallo's journey into the world of art began as a personal exploration of creativity and self-expression.
+                  
                 </p>
-                <p>
-                  Equipped with a degree in Economics, Nyakallo's path might have seemed destined for corporate boardrooms, but her heart always belonged to the arts. Her unique perspective combines analytical thinking with creative expression, allowing her to create art that resonates on multiple levels.
-                </p>
-                <p>
-                  "I've always believed that our spaces should reflect who we are and inspire who we want to become," says Nyakallo. "Every canvas I create is an invitation to bring beauty and meaning into your home."
-                </p>
+               
               </div>
             </div>
             <div className="relative aspect-square w-full rounded-xl overflow-hidden">
