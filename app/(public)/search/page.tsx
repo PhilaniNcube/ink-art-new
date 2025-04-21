@@ -1,9 +1,9 @@
 import React, { Suspense } from 'react'
 import ProductsFilter from '../_components/products-filter'
-import { SearchParams } from 'nuqs'
 import { fetchFilteredProducts } from '@/utils/queries/products'
 import FilteredProducts from '../products/_components/filtered-products'
 import FeaturedProductsSkeleton from '../_components/featured-products-skeleton'
+import { SearchParams } from '@/utils/supabase/types'
 
 
 
