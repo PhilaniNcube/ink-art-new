@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { format } from 'date-fns'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { cn, formatCurrency } from '@/lib/utils'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { EllipsisIcon, Pencil, TrashIcon } from 'lucide-react'
 import Link from 'next/link'
@@ -56,6 +56,21 @@ export const columns = [
         featured ? "bg-green-600 text-white" : "bg-blue-600 text-white"
         )}>{featured ? 'Featured' : 'Not Featured'}</Badge>;
     }
+  }),
+
+  columnHelper.accessor('variants', {
+    header: 'Price Range',
+    cell: info => {
+      const variants = info.getValue()
+        // sort the variants by price in ascending order
+        const sortedVariants = variants.sort((a: any, b: any) => a.price - b.price)
+        // get the first variant's price
+        const lowPriceRange = sortedVariants[0].price
+        // format the price to 2 decimal places
+        const highPriceRange = sortedVariants[sortedVariants.length - 1].price
+
+      return <span className="text-sm">{`${formatCurrency(lowPriceRange)} - ${formatCurrency(highPriceRange)}`}</span>
+    },
   }),
 
 
