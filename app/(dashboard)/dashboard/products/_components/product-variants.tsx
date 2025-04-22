@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { Database } from "@/utils/supabase/types"
+import { formatCurrency } from "@/lib/utils"
 
 interface ProductVariantsProps {
   product: Database["public"]["Tables"]["products"]["Row"]
@@ -134,8 +135,8 @@ export default function ProductVariants({ product }: ProductVariantsProps) {
                       </TableCell>
                       <TableCell className="font-medium">{variant.title}</TableCell>
                       <TableCell>{variant.sku}</TableCell>
-                      <TableCell className="text-right">${variant.price.toFixed(2)}</TableCell>
-                      <TableCell className="text-right">${variant.cost.toFixed(2)}</TableCell>
+                      <TableCell className="text-right">{formatCurrency(variant.price)}</TableCell>
+                      <TableCell className="text-right">{formatCurrency(variant.cost)}</TableCell>
                       <TableCell className="text-right">{variant.quantity}</TableCell>
                       <TableCell className="text-center">
                         <Badge
