@@ -8,8 +8,11 @@ import { format } from 'date-fns'
 import { Button } from '@/components/ui/button'
 import { cn, formatCurrency } from '@/lib/utils'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { EllipsisIcon, Pencil, TrashIcon } from 'lucide-react'
+import { Delete, EllipsisIcon, Pencil, TrashIcon } from 'lucide-react'
 import Link from 'next/link'
+import { deleteProduct } from '@/utils/actions/products'
+import { startTransition } from 'react'
+import { DeleteProductDialog } from './delete-product-dialog'
 // Import other necessary components like Button, DropdownMenu for actions if needed
 
 type Product = Database['public']['Tables']['products']['Row']
@@ -44,17 +47,30 @@ export const columns = [
   // Product Name Column
   columnHelper.accessor('title', {
     header: 'Title',
-    cell: info => <span className="font-medium">{info.getValue()}</span>,
+    cell: ({ row }) => {
+      const product = row.original
+      return (
+        <Link href={`/dashboard/products/${product.id}`} className="flex items-center space-x-2">
+          <img src={product.images[0].src} alt={product.title} className="h-10 object-cover w-10 rounded-md" />
+          <span className="text-sm font-medium">{product.title}</span>
+          {product.is_locked && (
+            <Badge variant="outline" className="border-amber-500 text-amber-500">
+              Locked
+            </Badge>
+          )}
+        </Link>
+      )
+    }
   }),
 
   // Description Column (Truncated)
   columnHelper.accessor('featured', {
     header: 'Featured',
     cell: info => {
-        const featured = info.getValue();
-        return <Badge className={cn("text-xs rounded-full truncate max-w-xs", 
+      const featured = info.getValue();
+      return <Badge className={cn("text-xs rounded-full truncate max-w-xs",
         featured ? "bg-green-600 text-white" : "bg-blue-600 text-white"
-        )}>{featured ? 'Featured' : 'Not Featured'}</Badge>;
+      )}>{featured ? 'Featured' : 'Not Featured'}</Badge>;
     }
   }),
 
@@ -62,12 +78,12 @@ export const columns = [
     header: 'Price Range',
     cell: info => {
       const variants = info.getValue()
-        // sort the variants by price in ascending order
-        const sortedVariants = variants.sort((a: any, b: any) => a.price - b.price)
-        // get the first variant's price
-        const lowPriceRange = sortedVariants[0].price
-        // format the price to 2 decimal places
-        const highPriceRange = sortedVariants[sortedVariants.length - 1].price
+      // sort the variants by price in ascending order
+      const sortedVariants = variants.sort((a: any, b: any) => a.price - b.price)
+      // get the first variant's price
+      const lowPriceRange = sortedVariants[0].price
+      // format the price to 2 decimal places
+      const highPriceRange = sortedVariants[sortedVariants.length - 1].price
 
       return <span className="text-sm">{`${formatCurrency(lowPriceRange)} - ${formatCurrency(highPriceRange)}`}</span>
     },
@@ -82,29 +98,29 @@ export const columns = [
   // }),
 
   // Created At Column
-columnHelper.accessor('created_at', {
-  header: 'Created At',
-  cell: info => {
-    const dateValue = info.getValue();
-    // Check if dateValue is not null or undefined before formatting
-    if (dateValue) {
-      try {
-        // Attempt to parse the date string into a Date object
-        const date = new Date(dateValue);
-        // Check if the parsed date is valid before formatting
-        if (!isNaN(date.getTime())) {
-          return format(date, 'dd/MM/yyyy');
+  columnHelper.accessor('created_at', {
+    header: 'Created At',
+    cell: info => {
+      const dateValue = info.getValue();
+      // Check if dateValue is not null or undefined before formatting
+      if (dateValue) {
+        try {
+          // Attempt to parse the date string into a Date object
+          const date = new Date(dateValue);
+          // Check if the parsed date is valid before formatting
+          if (!isNaN(date.getTime())) {
+            return format(date, 'dd/MM/yyyy');
+          }
+        } catch (error) {
+          console.error("Error parsing date:", error);
+          // Handle potential parsing errors, e.g., return the original string or 'Invalid Date'
+          return 'Invalid Date';
         }
-      } catch (error) {
-        console.error("Error parsing date:", error);
-        // Handle potential parsing errors, e.g., return the original string or 'Invalid Date'
-        return 'Invalid Date';
       }
-    }
-    // Return 'N/A' if the dateValue is null or undefined
-    return 'N/A';
-  },
-}),
+      // Return 'N/A' if the dateValue is null or undefined
+      return 'N/A';
+    },
+  }),
 
   // Actions Column (Example)
   columnHelper.display({
@@ -114,26 +130,20 @@ columnHelper.accessor('created_at', {
       const product = row.original
       // Add DropdownMenu with actions like Edit, Delete here
       return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="outline" size='icon'>
-                    <span className="sr-only">Actions</span>
-                    <EllipsisIcon className="h-4 w-4" />
-                    {/* Icon for actions, e.g., three dots or similar */}
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-               <DropdownMenuItem>
-                    <Link href={`/dashboard/products/${product.id}`} className="w-full flex" onClick={() => console.log('Edit', product.id)}>
-                       <Pencil className='h-5 w-5 mr-2' /> Edit
-                    </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                    <TrashIcon className='h-5 w-5 mr-2' />
-                    Delete
-               </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center space-x-2">
+          <Link href={`/dashboard/products/${product.id}`}>
+            <Button variant="ghost" size="icon" className="mr-2">
+              <Pencil className="h-4 w-4" />
+              <span className="sr-only">Edit</span>
+            </Button>
+          </Link>
+          <DeleteProductDialog productId={product.id}>
+            <Button variant="destructive" size="icon" className="mr-2">
+              <TrashIcon className="h-4 w-4" />
+              <span className="sr-only">Delete</span>
+            </Button>
+          </DeleteProductDialog>
+        </div>
       )
     },
   }),
