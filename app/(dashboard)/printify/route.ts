@@ -61,9 +61,10 @@ const querySchema = z.object({
 export async function GET(request: Request) {
   try {
     // Get API key from environment variables
-    const apiKey = process.env.NEXT_PUBLIC_PRINTIFY_API_TOKEN;
-    
+    const apiKey = process.env.PRINTIFY_API_TOKEN; // Use non-public variable
+
     if (!apiKey) {
+      console.error("Printify API token is missing. Ensure PRINTIFY_API_TOKEN is set.");
       return NextResponse.json(
         { error: "Printify API key is not configured" },
         { status: 500 }
@@ -83,9 +84,16 @@ export async function GET(request: Request) {
     }
 
     const { page, limit } = queryResult.data;
-    
+
+    // Build query string dynamically
+    const queryParams = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+    });
+
     // Make request to Printify API
-    const printifyUrl = `https://api.printify.com/v1/shops/9354978/products.json?page=${page}&limit=${limit}`;
+    // Use the validated & defaulted page and limit
+    const printifyUrl = `https://api.printify.com/v1/shops/9354978/products.json?${queryParams.toString()}`;
     
     const response = await fetch(printifyUrl, {
       headers: {
