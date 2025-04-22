@@ -1,3 +1,4 @@
+import { ImageDisplay } from '@/components/ui/image-display'
 import { fetchFilteredProducts } from '@/utils/queries/products'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -16,6 +17,8 @@ const FilteredProducts = async ({ categories, query }: {
         query
     })
 
+    console.log('Filtered Products:', filteredProducts)
+
 
 
     return (
@@ -25,8 +28,14 @@ const FilteredProducts = async ({ categories, query }: {
                 {filteredProducts && filteredProducts.length > 0 ? (
                     filteredProducts.map((product) => (
                         <Link href={`/products/${product.id}`} key={product.id} className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center">
-                            <Image width={300} height={500} src={product.images[0].src} alt={product.title} className="w-auto h-48 object-cover rounded-lg mb-4" />
-                        </Link>
+                        <ImageDisplay
+                            images={product.images}
+                            altText={product.title}
+                            width={300}
+                            height={500}
+                            className="w-full h-48 object-cover rounded-lg mb-4"
+                        />
+                    </Link>
                     ))
                 ) : (
                     <p>No products found.</p>
