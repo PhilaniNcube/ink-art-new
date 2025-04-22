@@ -21,6 +21,22 @@ export async function fetchPaginatedProducts(page: number, limit: number) {
   return data;
 }
 
+export async function fetchAllProducts() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .order("title", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching all products:", error);
+    return null;
+  }
+
+  return data;
+}
+
 
 export async function featchFeaturedProducts() {
   const supabase = await createClient();
