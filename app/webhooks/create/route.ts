@@ -11,7 +11,7 @@ export async function POST(request: Request) {
         },
         body: JSON.stringify({
             url: 'https://ink-art-new.vercel.app/webhooks/products',
-            topic: 'product',
+            topic: 'product:publish:started',
             
         })
     })
