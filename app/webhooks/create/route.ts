@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
 
-    const res = await fetch('https://api.printify.com/v1/shops/9354978/webhooks.json?topic=product:deleted&', {
+    const res = await fetch('https://api.printify.com/v1/shops/9354978/webhooks.json', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
