@@ -1,11 +1,11 @@
 // write an handler to create a new printify webhook for handling product updates
 import { NextResponse } from 'next/server';
 
-export async function GET(request: Request) {
+export async function POST(request: Request) {
  
     const apiToken = process.env.PRINTIFY_WEBHOOKS_TOKEN;
 
-    const webhookId = process.env.PRINTIFY_WEBHOOK_ID;
+    const webhookId = process.env.PRODUCT_UPDATE_WEBHOOK_ID;
     const shopId = '9354978'; // Your specific shop ID
     const webhookUrl = 'https://ink-art-new.vercel.app/webhooks/products/update';
     const topic = 'product:publish:started';
@@ -14,21 +14,13 @@ export async function GET(request: Request) {
 
 
     try {
-        const res = await fetch(webhookEndpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiToken}`
-            },
-            body: JSON.stringify({
-                url: webhookUrl,
-                topic: topic,
-            })
-        });
+        const res = await request.json()
      
         // Log response status and headers for more context on error
         console.log(`Printify API Response Status: ${res.status}`);
         console.log('Printify API Response Headers:', res.headers);
+
+        console.log('Received Printify webhook payload:', res);
 
 
         if (!res.ok) {
