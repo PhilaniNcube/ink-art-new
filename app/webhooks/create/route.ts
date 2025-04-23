@@ -10,8 +10,8 @@ export async function POST(request: Request) {
             'Authorization': `Bearer ${process.env.PRINTIFY_API_TOKEN}`
         },
         body: JSON.stringify({
-            url: 'https://example.com/webhooks/products',
-            topic: 'product:deleted',
+            url: 'https://ink-art-new.vercel.app/webhooks/products',
+            topic: 'product',
             
         })
     })
