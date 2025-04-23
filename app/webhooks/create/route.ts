@@ -1,34 +1,67 @@
 // write an handler to create a new printify webhook for handling product updates
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
 
-export async function POST(request: Request) {
+export async function GET(request: Request) {
+    // Basic check if token is available (masking for safety)
+    console.log('Received starting');
 
-    const res = await fetch('https://api.printify.com/v1/shops/9354978/webhooks.json', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${process.env.PRINTIFY_API_TOKEN}`
-        },
-        body: JSON.stringify({
-            url: 'https://ink-art-new.vercel.app/webhooks/products',
-            topic: 'product:publish:started',
-            
-        })
-    })
-    
-    // check if the response is ok
-    if (!res.ok) {
-        console.error('Failed to fetch webhooks:', res.statusText)
-        // send back the 500 response code
-        return NextResponse.json({ error: 'Failed to fetch webhooks' }, { status: 500 })
-    }   
+    const apiToken = process.env.PRINTIFY_WEBHOOKS_TOKEN;
+    if (!apiToken) {
+        console.error('PRINTIFY_API_TOKEN environment variable not set.');
+        return NextResponse.json({ error: 'Server configuration error: Printify API token missing.' }, { status: 500 });
+    }
+    // console.log('Using Printify token starting with:', apiToken.substring(0, 4)); // Log prefix if helpful for debugging setup
+
+    const shopId = '9354978'; // Your specific shop ID
+    const webhookUrl = 'https://ink-art-new.vercel.app/webhooks/products';
+    const topic = 'product:publish:started';
+    const createWebhookEndpoint = `https://api.printify.com/v1/shops/${shopId}/webhooks.json`;
+
+    console.log(`Attempting to create webhook: POST ${createWebhookEndpoint}`);
+    console.log(`Webhook URL: ${webhookUrl}, Topic: ${topic}`);
 
 
-    const data = await res.json()
+    try {
+        const res = await fetch(createWebhookEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiToken}`
+            },
+            body: JSON.stringify({
+                url: webhookUrl,
+                topic: topic,
+            })
+        });
 
-    console.log('Webhooks:', data)
+        // Log response status and headers for more context on error
+        console.log(`Printify API Response Status: ${res.status}`);
+        console.log('Printify API Response Headers:', res.headers);
 
-    // send back the 200 response code
-    return NextResponse.json(data, { status: 200 })
 
+        if (!res.ok) {
+            const errorBody = await res.text(); // Read response body as text for potential error details
+            console.error(`Failed to create webhook. Status: ${res.status}. Status Text: ${res.statusText}. Body: ${errorBody}`);
+
+            // Return a more specific error including the status code
+            return NextResponse.json(
+                {
+                    error: `Failed to create Printify webhook. API responded with status ${res.status}.`,
+                    details: errorBody // Include the raw error body from Printify
+                },
+                { status: res.status } // Use the actual status code received from Printify
+            );
+        }
+
+        const data = await res.json();
+
+        console.log('Successfully created webhook:', data);
+
+        // send back the 200 response code
+        return NextResponse.json(data, { status: 200 });
+
+    } catch (error) {
+        console.error('An error occurred while trying to create Printify webhook:', error);
+        return NextResponse.json({ error: 'An unexpected error occurred.' }, { status: 500 });
+    }
 }
