@@ -21,26 +21,8 @@ export async function POST(request: Request) {
         console.log('Received Printify webhook payload:', JSON.stringify(res, null, 2));
 
 
-        if (!res.ok) {
-            const errorBody = await res.text(); // Read response body as text for potential error details
-            console.error(`Failed to create webhook. Status: ${res.status}. Status Text: ${res.statusText}. Body: ${errorBody}`);
-
-            // Return a more specific error including the status code
-            return NextResponse.json(
-                {
-                    error: `Failed to create Printify webhook. API responded with status ${res.status}.`,
-                    details: errorBody // Include the raw error body from Printify
-                },
-                { status: res.status } // Use the actual status code received from Printify
-            );
-        }
-
-        const data = await res.json();
-
-        console.log('Successfully created webhook:', data);
-
         // send back the 200 response code
-        return NextResponse.json(data, { status: 200 });
+        return NextResponse.json({ status: 200, message: 'Webhook received successfully' });
 
     } catch (error) {
         console.error('An error occurred while trying to create Printify webhook:', error);
