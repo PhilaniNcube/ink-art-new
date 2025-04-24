@@ -16,11 +16,9 @@ export async function POST(request: Request) {
     try {
         const res = await request.json()
      
-        // Log response status and headers for more context on error
-        console.log(`Printify API Response Status: ${res.status}`);
-        console.log('Printify API Response Headers:', res.headers);
 
-        console.log('Received Printify webhook payload:', res);
+
+        console.log('Received Printify webhook payload:', JSON.stringify(res, null, 2));
 
 
         if (!res.ok) {

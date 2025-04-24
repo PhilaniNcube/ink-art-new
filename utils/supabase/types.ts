@@ -1,4 +1,20 @@
 export type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
+
+export type WebhookProductUpdate = {
+  id:string;
+  type:string;
+  created_at:string;
+  resource: {
+    id: string;
+    type: string;
+    data: {
+      shop_id: string;
+      publish_details: any;
+      action: 'create' | 'update' | 'delete';
+      out_of_stock_publishing: number | null;
+    }
+  }
+}
  
 
 export type PrintAreas = {
