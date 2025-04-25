@@ -14,8 +14,8 @@ export function LogoutButton() {
     router.push('/')
   }
 
-  return <Button size='icon' onClick={logout} variant='outline' className="rounded-full border-collapse border-red-300 text-red-500 hover:bg-red-50 hover:text-red-600">
-
-    <LogOut className="" />
+  return <Button size='icon' onClick={logout} variant='outline' className="w-full hover:bg-red-500 hover:text-white">
+    <LogOut className="h-4 w-4" />
+    <span className="">Logout</span>
   </Button>
 }

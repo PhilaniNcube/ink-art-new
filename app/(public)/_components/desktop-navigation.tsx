@@ -7,9 +7,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import CartSheet from '@/components/cart/cart-sheet'
 import { admin, currentUser } from '@/utils/queries/users'
-import { LayoutDashboardIcon, LogOut, User } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { LogoutButton } from '@/components/logout-button'
+import { UserDropdownMenu } from '@/components/user-dropdown-menu'
 
 const DesktopNavigation = async () => {
 
@@ -41,34 +39,9 @@ const DesktopNavigation = async () => {
                                 />
                             </Link>
                             <MegaMenu categories={categories} featuredProducts={featuredProducts} />
-                        </div>
-
-                        <div className="flex items-center space-x-4">
+                        </div>                        <div className="flex items-center space-x-4">
                             <SearchSheet />
-                            {
-                                user ? (
-                                    <div className="flex items-center space-x-2">
-                                        {isAdmin && (
-                                            <Link href='/dashboard' className="p-2 border rounded-lg bg-slate-200 flex items-center space-x-1 hover:bg-muted">
-                                                
-                                                
-                                                <span className="text-xs">Dashboard</span>
-                                            </Link>
-                                        )}
-                                        <Link href='/account' className="p-2 rounded-full hover:bg-muted">
-                                            <span className="sr-only">Account</span>
-                                            <User className="h-5 w-5" />
-                                        </Link>
-                                       <LogoutButton />
-                                    </div>
-                                ) : (
-                                    <Link href='/auth/login' className="p-2 rounded-full hover:bg-muted">
-                                        <span className="sr-only">Account</span>
-                                        <User className="h-5 w-5" />
-                                    </Link>
-                                )
-                            }
-
+                            <UserDropdownMenu user={user} isAdmin={isAdmin} />
                             <CartSheet />
                         </div>
                     </div>
