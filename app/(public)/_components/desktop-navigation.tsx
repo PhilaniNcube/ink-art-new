@@ -6,15 +6,23 @@ import SearchSheet from './search-sheet'
 import Image from 'next/image'
 import Link from 'next/link'
 import CartSheet from '@/components/cart/cart-sheet'
+import { admin, currentUser } from '@/utils/queries/users'
+import { LayoutDashboardIcon, LogOut, User } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { LogoutButton } from '@/components/logout-button'
 
 const DesktopNavigation = async () => {
 
     const categoriesData = fetchCategories()
     const featuredData = featchFeaturedProducts()
+    const userData = currentUser()
+    const adminData = admin()
 
-    const [categories, featuredProducts] = await Promise.all([
+    const [categories, featuredProducts, user, isAdmin] = await Promise.all([
         categoriesData,
-        featuredData
+        featuredData,
+        userData,
+        adminData
     ])
 
     return (
@@ -37,25 +45,31 @@ const DesktopNavigation = async () => {
 
                         <div className="flex items-center space-x-4">
                             <SearchSheet />
-                            <button className="p-2 rounded-full hover:bg-muted">
-                                <span className="sr-only">Account</span>
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="h-5 w-5"
-                                >
-                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-                                    <circle cx="12" cy="7" r="4" />
-                                </svg>
-                            </button>
-                           <CartSheet />
+                            {
+                                user ? (
+                                    <div className="flex items-center space-x-2">
+                                        {isAdmin && (
+                                            <Link href='/dashboard' className="p-2 border rounded-lg bg-slate-200 flex items-center space-x-1 hover:bg-muted">
+                                                
+                                                
+                                                <span className="text-xs">Dashboard</span>
+                                            </Link>
+                                        )}
+                                        <Link href='/account' className="p-2 rounded-full hover:bg-muted">
+                                            <span className="sr-only">Account</span>
+                                            <User className="h-5 w-5" />
+                                        </Link>
+                                       <LogoutButton />
+                                    </div>
+                                ) : (
+                                    <Link href='/auth/login' className="p-2 rounded-full hover:bg-muted">
+                                        <span className="sr-only">Account</span>
+                                        <User className="h-5 w-5" />
+                                    </Link>
+                                )
+                            }
+
+                            <CartSheet />
                         </div>
                     </div>
 
