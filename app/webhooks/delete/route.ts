@@ -15,14 +15,14 @@ export async function GET(request: Request) {
     const shopId = '9354978'; // Your specific shop ID
     // const webhookUrl = 'https://ink-art-new.vercel.app/webhooks/products/update';
     // const topic = 'product:publish:started';
-    const listWebhooksEndpoint = `https://api.printify.com/v1/shops/${shopId}/6809478c7a1fc799d60ce017/webhooks.json`;
+    const deleteWebhooksEndpoint = `https://api.printify.com/v1/shops/${shopId}/webhooks/6809478c7a1fc799d60ce017.json`;
 
-    console.log(`Attempting to get webhooks: GET ${listWebhooksEndpoint}`);
+    console.log(`Attempting to get webhooks: GET ${deleteWebhooksEndpoint}`);
     // console.log(`Webhook URL: ${webhookUrl}, Topic: ${topic}`);
 
 
     try {
-        const res = await fetch(listWebhooksEndpoint, {
+        const res = await fetch(deleteWebhooksEndpoint, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
