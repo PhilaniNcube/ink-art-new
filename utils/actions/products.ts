@@ -108,6 +108,16 @@ export async function updatePrintifyProductTitle(productId: string, title: strin
         console.error("Error updating product:", data);
         return { success: false, error: data };
     }
+
+    const supabase = await createClient();
+
+    // Update the product title in the database
+    const { error } = await supabase.from("products").update({ title }).eq("id", productId);
+    if (error) {
+        console.error("Error updating product title in database:", error);
+        return { success: false, error };
+    }
+
     console.log("Product published successfully:", data);
     revalidatePath("/dashboard/products");
     return { success: true, data };
