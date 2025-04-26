@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { PrintifyProductsList } from './printify-products-list'
 
 // Function to fetch directly from Printify (similar logic to the route handler)
 async function fetchPrintifyProductsDirectly(page: number = 1, limit: number = 30): Promise<PrintifyResponse | { error: string; details?: any }> {
@@ -63,29 +64,35 @@ const PrintifyProducts = async () => {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Printify Product Summary</CardTitle>
-        <CardDescription>
-          Overview of products fetched directly from the Printify API.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {error ? (
-          <p className="text-red-500">Error fetching data: {error}</p>
-        ) : productsResponse ? (
-          <div className="space-y-1 text-sm">
-            <p><span className="font-medium">Total Products Found:</span> {productsResponse.total}</p>
-            <p><span className="font-medium">Products on Current Page:</span> {productsResponse.data.length}</p>
-            <p><span className="font-medium">Current Page:</span> {productsResponse.current_page}</p>
-            <p><span className="font-medium">Total Pages:</span> {productsResponse.last_page}</p>
-            <p><span className="font-medium">Products per Page:</span> {productsResponse.per_page}</p>
-          </div>
-        ) : (
-          <p>Loading product data...</p> // Should ideally not show if fetch is awaited
-        )}
-      </CardContent>
-    </Card>
+    <div className="space-y-8">
+      <Card>
+        <CardHeader>
+          <CardTitle>Printify Product Summary</CardTitle>
+          <CardDescription>
+            Overview of products fetched directly from the Printify API.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {error ? (
+            <p className="text-red-500">Error fetching data: {error}</p>
+          ) : productsResponse ? (
+            <div className="space-y-1 text-sm">
+              <p><span className="font-medium">Total Products Found:</span> {productsResponse.total}</p>
+              <p><span className="font-medium">Products on Current Page:</span> {productsResponse.data.length}</p>
+              <p><span className="font-medium">Current Page:</span> {productsResponse.current_page}</p>
+              <p><span className="font-medium">Total Pages:</span> {productsResponse.last_page}</p>
+              <p><span className="font-medium">Products per Page:</span> {productsResponse.per_page}</p>
+            </div>
+          ) : (
+            <p>Loading product data...</p> // Should ideally not show if fetch is awaited
+          )}
+        </CardContent>
+      </Card>
+      
+      {productsResponse && productsResponse.data.length > 0 && (
+        <PrintifyProductsList products={productsResponse.data} />
+      )}
+    </div>
   )
 }
 

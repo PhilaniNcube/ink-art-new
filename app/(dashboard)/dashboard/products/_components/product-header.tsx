@@ -6,6 +6,7 @@ import { ArrowLeft, MoreHorizontal } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 import PublishButton from './publish-button'
+import { UpdateProductTitleDialog } from '../../_components/update-product-title'
 
 const ProductHeader = ({ product }: { product: Database['public']['Tables']['products']['Row'] }) => {
     return (
@@ -18,7 +19,14 @@ const ProductHeader = ({ product }: { product: Database['public']['Tables']['pro
             </Link>
 
             <div className="flex flex-col">
-                <h1 className="text-lg font-semibold">{product.title}</h1>
+                <div className="flex space-x-2 items-center">
+                    <h1 className="text-lg font-semibold">{product.title}</h1>
+                    <UpdateProductTitleDialog
+                        productId={product.id}
+                        currentTitle={product.title}
+                    />
+                </div>
+
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <span>ID: {product.id}</span>
                 </div>
