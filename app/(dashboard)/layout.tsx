@@ -54,7 +54,7 @@ const DashboardLayout = ({children}:{children:ReactNode}) => {
                   Dashboard
                 </Link>
                 <Link
-                  href="#" // Replace with actual orders link
+                  href="/dashboard/orders" // Replace with actual orders link
                   className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
                 >
                   <ShoppingCart className="h-4 w-4" />
@@ -119,7 +119,7 @@ const DashboardLayout = ({children}:{children:ReactNode}) => {
                     Dashboard
                   </Link>
                   <Link
-                    href="#" // Replace with actual orders link
+                    href="/dashboard/orders" // Replace with actual orders link
                     className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
                   >
                     <ShoppingCart className="h-5 w-5" />

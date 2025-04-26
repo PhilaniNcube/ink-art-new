@@ -82,7 +82,7 @@ export const columns: ColumnDef<Order>[] = [
     cell: ({ row }) => <p className="font-medium">{(row.getValue("id") as string).slice(0,8)}</p>,
   },
   {
-    accessorKey: "customer",
+    accessorKey: "email",
     header: "Customer",
     cell: ({ row }) => {
       const order = row.original
@@ -140,7 +140,7 @@ export const columns: ColumnDef<Order>[] = [
     },
   },
   {
-    accessorKey: "status",
+    accessorKey: "paid",
     header: "Status",
     cell: ({ row }) => {
       const isPaid = row.original.paid
@@ -221,9 +221,9 @@ export function OrdersTable({ data }: OrdersTableProps) {
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search orders..."
-              value={(table.getColumn("id")?.getFilterValue() as string) ?? ""}
-              onChange={(event) => table.getColumn("id")?.setFilterValue(event.target.value)}
+              placeholder="Search by email..."
+              value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+              onChange={(event) => table.getColumn("email")?.setFilterValue(event.target.value)}
               className="h-10 w-[150px] pl-8 md:w-[250px]"
             />
           </div>
@@ -237,13 +237,13 @@ export function OrdersTable({ data }: OrdersTableProps) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Filter by status</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => table.getColumn("status")?.setFilterValue("paid")}>
+              <DropdownMenuItem onClick={() => table.getColumn('paid')?.setFilterValue(true)}>
                 Paid only
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => table.getColumn("status")?.setFilterValue("pending")}>
+              <DropdownMenuItem onClick={() => table.getColumn("paid")?.setFilterValue(false)}>
                 Pending only
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => table.getColumn("status")?.setFilterValue("")}>
+              <DropdownMenuItem onClick={() => table.getColumn("paid")?.setFilterValue("")}>
                 Clear filter
               </DropdownMenuItem>
               <DropdownMenuSeparator />
