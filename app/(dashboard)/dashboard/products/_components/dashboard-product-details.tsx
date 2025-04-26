@@ -6,9 +6,9 @@ import { formatDate } from 'date-fns'
 import { CalendarIcon, TagIcon } from 'lucide-react'
 import React from 'react'
 
-const DashboardProductDetails = ({product}:{product:Database['public']['Tables']['products']['Row']}) => {
+const DashboardProductDetails = ({ product }: { product: Database['public']['Tables']['products']['Row'] }) => {
   return (
-     <div className="grid gap-4 md:grid-cols-2">
+    <div className="grid gap-4 md:grid-cols-2">
       <Card>
         <CardHeader>
           <CardTitle>Basic Information</CardTitle>
@@ -23,7 +23,7 @@ const DashboardProductDetails = ({product}:{product:Database['public']['Tables']
           <div>
             <h3 className="text-sm font-medium text-muted-foreground">Description</h3>
             <div className="text-base">
-                <div dangerouslySetInnerHTML={{ __html: product.description }} />
+              <div dangerouslySetInnerHTML={{ __html: product.description }} />
             </div>
           </div>
 
@@ -36,8 +36,8 @@ const DashboardProductDetails = ({product}:{product:Database['public']['Tables']
             <h3 className="text-sm font-medium text-muted-foreground">Tags</h3>
             <div className="flex flex-wrap gap-2 pt-1">
               {product.tags.length > 0 ? (
-                product.tags.map((tag) => (
-                  <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+                product.tags.map((tag, index) => (
+                  <Badge key={`${tag}-${index}`} variant="secondary" className="flex items-center gap-1">
                     <TagIcon className="h-3 w-3" />
                     {tag}
                   </Badge>
@@ -113,7 +113,9 @@ const DashboardProductDetails = ({product}:{product:Database['public']['Tables']
                 <span className="text-muted-foreground">Shop ID:</span>
                 <p>{product.shop_id}</p>
               </div>
+
             </div>
+           
           </CardContent>
         </Card>
       </div>

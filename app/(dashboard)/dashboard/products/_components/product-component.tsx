@@ -1,16 +1,22 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Database } from '@/utils/supabase/types';
+import { Database, PrintifyProduct } from '@/utils/supabase/types';
 import React from 'react'
 import DashboardProductDetails from './dashboard-product-details';
 import ProductVariants from './product-variants';
 import ProductImages from './product-images';
 import ProductPrintAreas from './product-print-areas';
 
-const ProductComponent = ({product}:{product:Database['public']['Tables']['products']['Row']}) => {
+const ProductComponent = ({product, printifyProduct}:{product:Database['public']['Tables']['products']['Row'], printifyProduct:PrintifyProduct | null}) => {
 
     const [activeTab, setActiveTab] = React.useState("details")
+
+    // fetch the printify product details using the product_id from the product object in a useEffect
+
+
+
+
 
 
   return (

@@ -1,4 +1,5 @@
 import { createClient } from "../supabase/server";
+import { PrintifyProduct } from "../supabase/types";
 
 export async function fetchPaginatedProducts(page: number, limit: number) {
   const supabase = await createClient();
@@ -56,11 +57,11 @@ export async function featchFeaturedProducts() {
 }
 
 
-export async function fetchFilteredProducts({ 
-  categories, 
-  query 
-}: { 
-  categories?: string; 
+export async function fetchFilteredProducts({
+  categories,
+  query
+}: {
+  categories?: string;
   query?: string;
 }) {
   const supabase = await createClient();
@@ -78,7 +79,7 @@ export async function fetchFilteredProducts({
   console.log("Filtered products:", result.data.length);
 
   return result.data;
-  
+
 
 }
 
@@ -98,4 +99,28 @@ export async function fetchProductById(productId: string) {
   }
 
   return data;
+}
+
+export async function fetchPrintifyProductById(productId: string) {
+
+  const apiToken = process.env.PRINTIFY_WEBHOOKS_TOKEN;
+  const shopId = '9354978';
+
+
+  const res = await fetch(`https://api.printify.com/v1/shops/${shopId}/products/${productId}.json`, {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${apiToken}`,
+      "Content-Type": "application/json",
+    },
+  });
+  const data = await res.json();
+
+  if (!res.ok) {
+    console.error("Error fetching product from Printify:", data);
+    return null;
+  }
+
+  return data as PrintifyProduct;
+
 }

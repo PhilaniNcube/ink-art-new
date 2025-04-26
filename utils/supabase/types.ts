@@ -1,5 +1,45 @@
 export type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 
+export type PrintifyProduct = {
+  id:string;
+  title:string;
+  description:string;
+  tags:string[];
+  options: Option[] | null;
+  variants: Variant[];
+  images: ProductImage[];
+  created_at?: string;
+  updated_at?: string;
+  visible: boolean;
+  is_locked: boolean;
+  external?: {
+    id: string;
+    handle: string;
+  };
+  blueprint_id: number;
+  user_id: number;
+  shop_id: number;
+  print_provider_id: number;
+  print_areas: PrintAreas;
+  print_details: { print_on_side: string } | null;
+  sales_channel_properties?: string[] | null;
+   is_printify_express_eligible: boolean,
+  is_printify_express_enabled: boolean,
+  is_economy_shipping_eligible: boolean,
+  is_economy_shipping_enabled: boolean,
+  is_deleted: boolean,
+  original_id: string,
+  views: {
+    id: number;
+    label: string;
+    position: string;
+    files: {
+      src: string;
+      variant_ids: number[];
+    }[];
+  }[];
+}
+
 export type WebhookProductUpdate = {
   id: string;
   type: string;
@@ -43,7 +83,8 @@ export type ProductImage = {
   variant_id: number;
   variant_ids: number[];
   is_selected_for_publishing: boolean;
-};
+  order?: any;
+}
 
 export type Variant = {
   id: number;
@@ -68,6 +109,8 @@ export type Option = {
     id: number;
     title: string;
   }[];
+  display_in_preview?: boolean;
+
 };
 
 export type OrderItem = {
