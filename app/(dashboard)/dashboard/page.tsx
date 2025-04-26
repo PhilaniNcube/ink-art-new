@@ -1,25 +1,137 @@
 import React, { Suspense } from 'react'
 import PrintifyProducts from './_components/printify-products'
 import { Skeleton } from '@/components/ui/skeleton'
+import { fetchOrdersAnalytics, fetchRecentOrders, fetchTotalRevenue } from '@/utils/queries/orders'
+import { DashboardHeader } from './_components/dashboard-header'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { StatsCards } from './_components/stats-cards'
+import { RecentSales } from './_components/recent-sales'
 
-const DashboardHome = () => {
-    return (
-        <div>
-            <h1 className="text-2xl font-bold">Dashboard Home</h1>
-            <p>Welcome to the dashboard!</p>
-            {/* Add more content here */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 py-4 gap-4">
-                <Suspense fallback={
-                    <div className='w-full p-3 aspect-square animate-pulse border rounded-md bg-muted'>
-                        <Skeleton className="h-3 w-2/3 mb-2" />
-                        <Skeleton className="h-3 w-full" />
+const DashboardHome = async () => {
+
+  const revenueData = fetchOrdersAnalytics()
+  const orderData = fetchRecentOrders()
+
+  const [totalRevenue, recentOrders] = await Promise.all([
+    revenueData,
+    orderData
+  ])
+
+
+
+  return (
+    <main>
+      <DashboardHeader
+        heading="Dashboard"
+        description="Welcome to your dashboard. Here you can manage your store, view analytics, and more."
+
+      />
+
+      <Tabs defaultValue="overview" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="products">Products</TabsTrigger>
+          <TabsTrigger value="orders">Orders</TabsTrigger>
+        </TabsList>
+        <TabsContent value="overview" className="space-y-4">
+          {
+            totalRevenue && <StatsCards revenueData={totalRevenue} />
+          }
+
+
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+            <Card className="lg:col-span-4">
+              <CardHeader>
+                <CardTitle>Sales Overview</CardTitle>
+                <CardDescription>
+                  Your sales performance over the last 30 days compared to the previous period.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pl-2">
+                {/* <Overview /> */}
+              </CardContent>
+            </Card>
+            <Card className="lg:col-span-3">
+              <CardHeader>
+                <CardTitle>Recent Sales</CardTitle>
+                <CardDescription>Your most recent orders.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {
+                  recentOrders === null ? (
+                    <div className="h-[400px] flex items-center justify-center text-muted-foreground">
+                      No recent orders found.
                     </div>
-                }>
-                    <PrintifyProducts />
-                </Suspense>
-            </div>
-        </div>
-    )
+                  ) : (
+                    <Suspense fallback={<Skeleton className="h-[400px]" />}>
+                      <RecentSales orders={recentOrders} />
+                    </Suspense>
+                  )
+
+                }
+
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+            <Card className="lg:col-span-4">
+              <CardHeader>
+                <CardTitle>Popular Products</CardTitle>
+                <CardDescription>Your best-selling products this month.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {/* <PopularProducts /> */}
+              </CardContent>
+            </Card>
+            <Card className="lg:col-span-3">
+              <CardHeader>
+                <CardTitle>Inventory Alert</CardTitle>
+                <CardDescription>Products that are low in stock or out of stock.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {/* <InventoryAlert /> */}
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="analytics" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Advanced Analytics</CardTitle>
+              <CardDescription>Detailed analytics and insights about your store.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[400px] flex items-center justify-center text-muted-foreground">
+                Advanced analytics content will appear here.
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="products" className="space-y-4">
+          {/* <ProductsOverview /> */}
+        </TabsContent>
+
+        <TabsContent value="orders" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Orders Overview</CardTitle>
+              <CardDescription>Manage and track your orders.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[400px] flex items-center justify-center text-muted-foreground">
+                Orders management interface will appear here.
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </main>
+  )
 }
 
 export default DashboardHome
