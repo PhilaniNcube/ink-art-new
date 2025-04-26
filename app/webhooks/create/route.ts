@@ -13,8 +13,8 @@ export async function GET(request: Request) {
     // console.log('Using Printify token starting with:', apiToken.substring(0, 4)); // Log prefix if helpful for debugging setup
 
     const shopId = '9354978'; // Your specific shop ID
-    const webhookUrl = 'https://ink-art-new.vercel.app/webhooks/products/update';
-    const topic = 'product:publish:started';
+    const webhookUrl = 'https://ink-art-new.vercel.app/webhooks/products/new';
+    const topic = 'product:update';
     const createWebhookEndpoint = `https://api.printify.com/v1/shops/${shopId}/webhooks.json`;
 
     console.log(`Attempting to create webhook: POST ${createWebhookEndpoint}`);
