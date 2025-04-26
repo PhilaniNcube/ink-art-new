@@ -1,14 +1,20 @@
 // write an handler to create a new printify webhook for handling product updates
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
 
 
 
 
 
     try {
+
+
         const res = await request.json()
+
+        if (!res) {
+            return NextResponse.json({ error: 'No payload received' }, { status: 400 });
+        }
 
 
 
