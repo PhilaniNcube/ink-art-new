@@ -51,7 +51,7 @@ export async function publishPrintifyProduct(productId: string) {
     const apiToken = process.env.PRINTIFY_WEBHOOKS_TOKEN;
     const shopId = '9354978';
 
-    const url = `https://api.printify.com/v1/shops/${shopId}/products/${productId}/publish.json`;
+    const url = `https://api.printify.com/v1/shops/${shopId}/products/${productId}/publishing_succeeded.json`;
 
     const res = await fetch(url, {
         method: "POST",
@@ -100,7 +100,7 @@ export async function updatePrintifyProductTitle(productId: string, title: strin
             "title": title,
         }),
     });
-    
+
     const data = await res.json();
 
     console.log("Updating product:", data);
