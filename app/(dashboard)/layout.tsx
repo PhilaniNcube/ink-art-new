@@ -69,19 +69,13 @@ const DashboardLayout = ({children}:{children:ReactNode}) => {
                   Products{" "}
                 </Link>
                 <Link
-                  href="#" // Replace with actual customers link
+                  href="/dashboard/customers" // Replace with actual customers link
                   className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
                 >
                   <Users className="h-4 w-4" />
                   Customers
                 </Link>
-                <Link
-                  href="#" // Replace with actual analytics link
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-                >
-                  <LineChart className="h-4 w-4" />
-                  Analytics
-                </Link>
+                
               </nav>
             </div>
             <div className="mt-auto p-4">
@@ -134,19 +128,13 @@ const DashboardLayout = ({children}:{children:ReactNode}) => {
                     Products
                   </Link>
                   <Link
-                    href="#" // Replace with actual customers link
+                    href="/dashboard/customers" // Replace with actual customers link
                     className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
                   >
                     <Users className="h-5 w-5" />
                     Customers
                   </Link>
-                  <Link
-                    href="#" // Replace with actual analytics link
-                    className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                  >
-                    <LineChart className="h-5 w-5" />
-                    Analytics
-                  </Link>
+                  
                 </nav>
                 <div className="mt-auto">
                  
