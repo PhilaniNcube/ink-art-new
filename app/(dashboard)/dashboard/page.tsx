@@ -7,15 +7,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { StatsCards } from './_components/stats-cards'
 import { RecentSales } from './_components/recent-sales'
+import { fetchAllProducts } from '@/utils/queries/products'
+import ProductsOverview from './_components/products-overview'
+import ProductsTable from './products/_components/products-table'
 
 const DashboardHome = async () => {
 
   const revenueData = fetchOrdersAnalytics()
   const orderData = fetchRecentOrders()
+  const productsData = fetchAllProducts()
 
-  const [totalRevenue, recentOrders] = await Promise.all([
+  const [totalRevenue, recentOrders, products] = await Promise.all([
     revenueData,
-    orderData
+    orderData,
+    productsData
   ])
 
 
@@ -31,7 +36,7 @@ const DashboardHome = async () => {
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+         
           <TabsTrigger value="products">Products</TabsTrigger>
           <TabsTrigger value="orders">Orders</TabsTrigger>
         </TabsList>
@@ -97,23 +102,8 @@ const DashboardHome = async () => {
             </Card>
           </div>
         </TabsContent>
-
-        <TabsContent value="analytics" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Advanced Analytics</CardTitle>
-              <CardDescription>Detailed analytics and insights about your store.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[400px] flex items-center justify-center text-muted-foreground">
-                Advanced analytics content will appear here.
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
         <TabsContent value="products" className="space-y-4">
-          {/* <ProductsOverview /> */}
+           <ProductsTable products={products!} />
         </TabsContent>
 
         <TabsContent value="orders" className="space-y-4">
