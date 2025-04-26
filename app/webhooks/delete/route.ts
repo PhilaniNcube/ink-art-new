@@ -1,7 +1,7 @@
 // write an handler to create a new printify webhook for handling product updates
 import { NextResponse } from 'next/server';
 
-export async function DELETE(request: Request) {
+export async function GET(request: Request) {
     // Basic check if token is available (masking for safety)
     console.log('Received starting');
 
