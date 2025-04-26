@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react'
 import PrintifyProducts from './_components/printify-products'
 import { Skeleton } from '@/components/ui/skeleton'
-import { fetchOrdersAnalytics, fetchRecentOrders, fetchTotalRevenue } from '@/utils/queries/orders'
+import { fetchAllOrders, fetchOrdersAnalytics, fetchRecentOrders, fetchTotalRevenue } from '@/utils/queries/orders'
 import { DashboardHeader } from './_components/dashboard-header'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -10,17 +10,21 @@ import { RecentSales } from './_components/recent-sales'
 import { fetchAllProducts } from '@/utils/queries/products'
 import ProductsOverview from './_components/products-overview'
 import ProductsTable from './products/_components/products-table'
+import { OrdersContent } from './_components/orders-content'
 
 const DashboardHome = async () => {
 
   const revenueData = fetchOrdersAnalytics()
+  const allOrdersData = fetchAllOrders()
   const orderData = fetchRecentOrders()
+
   const productsData = fetchAllProducts()
 
-  const [totalRevenue, recentOrders, products] = await Promise.all([
+  const [totalRevenue, products, orders] = await Promise.all([
     revenueData,
-    orderData,
-    productsData
+
+    productsData,
+    allOrdersData
   ])
 
 
@@ -36,7 +40,7 @@ const DashboardHome = async () => {
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
-         
+
           <TabsTrigger value="products">Products</TabsTrigger>
           <TabsTrigger value="orders">Orders</TabsTrigger>
         </TabsList>
@@ -65,13 +69,15 @@ const DashboardHome = async () => {
               </CardHeader>
               <CardContent>
                 {
-                  recentOrders === null ? (
+                  orders === null ? (
                     <div className="h-[400px] flex items-center justify-center text-muted-foreground">
                       No recent orders found.
                     </div>
                   ) : (
                     <Suspense fallback={<Skeleton className="h-[400px]" />}>
-                      <RecentSales orders={recentOrders} />
+                      {/* get the first 5 orders */}
+                      <RecentSales orders={orders.slice(0, 5)} />
+
                     </Suspense>
                   )
 
@@ -103,7 +109,7 @@ const DashboardHome = async () => {
           </div>
         </TabsContent>
         <TabsContent value="products" className="space-y-4">
-           <ProductsTable products={products!} />
+          <ProductsTable products={products!} />
         </TabsContent>
 
         <TabsContent value="orders" className="space-y-4">
@@ -113,9 +119,7 @@ const DashboardHome = async () => {
               <CardDescription>Manage and track your orders.</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-[400px] flex items-center justify-center text-muted-foreground">
-                Orders management interface will appear here.
-              </div>
+             <OrdersContent data={orders!} />
             </CardContent>
           </Card>
         </TabsContent>

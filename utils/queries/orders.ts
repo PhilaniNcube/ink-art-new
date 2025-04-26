@@ -1,7 +1,19 @@
 import { createClient } from "../supabase/server"
 
 
-export async function fetchOrders() {}
+export async function fetchAllOrders() {
+    const supabase = await createClient()
+
+    // write a query to get all orders from the orders table
+    const { data, error } = await supabase.from("orders").select("*")
+
+    if (error) {
+        console.error("Error fetching all orders:", error)
+        return null
+    }
+
+    return data
+}
 
 export async function fetchTotalRevenue() {
 
