@@ -14,7 +14,7 @@ export async function GET(request: Request) {
 
     const shopId = '9354978'; // Your specific shop ID
     const webhookUrl = 'https://ink-art-new.vercel.app/webhooks/products/new';
-    const topic = 'product:update';
+    const topic = 'product:publish:update';
     const createWebhookEndpoint = `https://api.printify.com/v1/shops/${shopId}/webhooks.json`;
 
     console.log(`Attempting to create webhook: POST ${createWebhookEndpoint}`);
@@ -34,9 +34,6 @@ export async function GET(request: Request) {
             })
         });
 
-        // Log response status and headers for more context on error
-        console.log(`Printify API Response Status: ${res.status}`);
-        console.log('Printify API Response Headers:', res.headers);
 
 
         if (!res.ok) {
