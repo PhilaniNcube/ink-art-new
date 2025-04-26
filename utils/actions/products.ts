@@ -4,9 +4,9 @@ import { revalidatePath } from "next/cache";
 import { admin } from "../queries/users";
 import { createClient } from "../supabase/server";
 
-export async function deleteProduct(prevState:unknown, formData: FormData) {
+export async function deleteProduct(prevState: unknown, formData: FormData) {
 
-    
+
 
     const productId = formData.get("productId") as string; // Ensure productId is a string  
 
@@ -44,4 +44,41 @@ export async function deleteProduct(prevState:unknown, formData: FormData) {
     revalidatePath("/dashboard/products");
 
     return { success: true };
+}
+
+export async function publishPrintifyProduct(productId: string) {
+
+    const apiToken = process.env.PRINTIFY_WEBHOOKS_TOKEN;
+    const shopId = '9354978';
+
+    const url = `https://api.printify.com/v1/shops/${shopId}/products/${productId}/publish.json`;
+
+    const res = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiToken}`,
+        },
+        body: JSON.stringify({
+            "title": true,
+            "description": true,
+            "images": true,
+            "variants": true,
+            "tags": true,
+            "keyFeatures": true,
+            "shipping_template": true
+        }),
+    });
+    const data = await res.json();
+
+    console.log("Publishing product:", data);
+    if (res.status !== 200) {
+        console.error("Error publishing product:", data);
+        return { success: false, error: data };
+    }
+    console.log("Product published successfully:", data);
+    revalidatePath("/dashboard/products");
+    return { success: true, data };
+
+
 }

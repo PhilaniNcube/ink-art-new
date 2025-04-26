@@ -5,6 +5,7 @@ import { Database } from '@/utils/supabase/types'
 import { ArrowLeft, MoreHorizontal } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
+import PublishButton from './publish-button'
 
 const ProductHeader = ({ product }: { product: Database['public']['Tables']['products']['Row'] }) => {
     return (
@@ -33,7 +34,7 @@ const ProductHeader = ({ product }: { product: Database['public']['Tables']['pro
                 <Badge variant={product.visible ? "default" : "secondary"}>{product.visible ? "Visible" : "Hidden"}</Badge>
 
                 <Button variant="outline">Preview</Button>
-                <Button>Publish</Button>
+                <PublishButton productId={product.id} />
 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
