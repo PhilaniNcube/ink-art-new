@@ -13,6 +13,7 @@ import Link from 'next/link'
 import { deleteProduct } from '@/utils/actions/products'
 import { startTransition } from 'react'
 import { DeleteProductDialog } from './delete-product-dialog'
+import UnlockProduct from './unlock-product'
 // Import other necessary components like Button, DropdownMenu for actions if needed
 
 type Product = Database['public']['Tables']['products']['Row']
@@ -54,9 +55,7 @@ export const columns = [
           <img src={product.images[0].src} alt={product.title} className="h-10 object-cover w-10 rounded-md" />
           <span className="text-sm font-medium">{product.title}</span>
           {product.is_locked && (
-            <Badge variant="outline" className="border-amber-500 text-amber-500">
-              Locked
-            </Badge>
+           <UnlockProduct productId={product.id} is_locked={product.is_locked} />
           )}
         </Link>
       )

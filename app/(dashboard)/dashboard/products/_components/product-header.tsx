@@ -7,6 +7,7 @@ import Link from 'next/link'
 import React from 'react'
 import PublishButton from './publish-button'
 import { UpdateProductTitleDialog } from '../../_components/update-product-title'
+import UnlockProduct from './unlock-product'
 
 const ProductHeader = ({ product }: { product: Database['public']['Tables']['products']['Row'] }) => {
     return (
@@ -33,11 +34,7 @@ const ProductHeader = ({ product }: { product: Database['public']['Tables']['pro
             </div>
 
             <div className="ml-auto flex items-center gap-2">
-                {product.is_locked && (
-                    <Badge variant="outline" className="border-amber-500 text-amber-500">
-                        Locked
-                    </Badge>
-                )}
+              <UnlockProduct productId={product.id} is_locked={product.is_locked} />
 
                 <Badge variant={product.visible ? "default" : "secondary"}>{product.visible ? "Visible" : "Hidden"}</Badge>
 

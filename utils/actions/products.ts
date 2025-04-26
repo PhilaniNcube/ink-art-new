@@ -122,3 +122,44 @@ export async function updatePrintifyProductTitle(productId: string, title: strin
     revalidatePath("/dashboard/products");
     return { success: true, data };
 }
+
+
+export async function unlockProduct(productId: string) {
+    const apiToken = process.env.PRINTIFY_WEBHOOKS_TOKEN;
+    const shopId = '9354978';
+
+    const url = `https://api.printify.com/v1/shops/${shopId}/products/${productId}.json`;
+
+    const res = await fetch(url, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiToken}`,
+        },
+        body: JSON.stringify({
+            "is_locked": false,
+        }),
+    });
+    const data = await res.json();
+
+    const supabase = await createClient();
+
+    console.log("Unlocking product:", data);
+    if (res.status !== 200) {
+        console.error("Error unlocking product:", data);
+        return { success: false, error: data };
+    }
+
+    // Update the product title in the database
+    const { error } = await supabase.from("products").update({ is_locked: false }).eq("id", productId);
+    if (error) {
+        console.error("Error unlocking product in database:", error);
+        return { success: false, error };
+    }
+    
+
+    console.log("Product unlocked successfully:", data);
+    revalidatePath("/dashboard/products");
+    return { success: true, data };
+}
+
