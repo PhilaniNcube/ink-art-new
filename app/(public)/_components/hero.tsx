@@ -19,7 +19,7 @@ const Hero = () => {
               Discover the world of art and creativity with our curated collection of unique pieces. Whether you're an artist, collector, or simply an admirer, we have something for everyone. Explore our gallery and find your next masterpiece today!
             </p>
             <Link href='/products' className='mt-4 w-fit inline-block bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300'>
-              Explore Products
+              Shop Now
               <ArrowRight className='ml-2 h-4 w-4 inline' />
             </Link>
           </div>
