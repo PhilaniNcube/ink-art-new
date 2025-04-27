@@ -1,6 +1,5 @@
 import React, { ReactNode } from 'react'
 import DesktopNavigation from './_components/desktop-navigation'
-import MobileNavigation from './_components/mobile-navigation'
 import { Geist } from "next/font/google";
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import '@/app/globals.css'
@@ -8,6 +7,7 @@ import Footer from './_components/footer';
 import { admin, currentUser } from '@/utils/queries/users'
 import { fetchCategories } from '@/utils/queries/categories'
 import { featchFeaturedProducts } from '@/utils/queries/products'
+import MobileNavigation from './_components/mobile-navigation';
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -46,8 +46,7 @@ const PublicLayout = async ({ children }: { children: ReactNode }) => {
         <div className="pb-16 lg:pb-0">
           {children}
         </div>
-        <MobileNavigation
-        />
+        <MobileNavigation />
         <Footer />
       </NuqsAdapter>
     </div>
