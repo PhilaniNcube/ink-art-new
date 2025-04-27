@@ -14,7 +14,7 @@ import { useCartStore } from "@/store/cart";
 
 const CartSheet = () => {
 
-    const { items, removeItem, clearCart, totalItems, totalPrice, isCartOpen, setIsCartOpen, decrementItemQuantity, incrementItemQuantity  } = useCart();
+    const { items, removeItem, clearCart, totalItems, totalPrice, isCartOpen, setIsCartOpen, decrementItemQuantity, incrementItemQuantity } = useCart();
 
     const handleRemoveItem = (id: number) => {
         removeItem(id);
@@ -23,15 +23,21 @@ const CartSheet = () => {
     return (
         <Sheet open={isCartOpen} onOpenChange={setIsCartOpen} >
             <SheetTrigger asChild>
-                <Button variant="outline" className="w-full bg-blue-200">
-                    <ShoppingBag size={16} className="mr-2" />
-                    {totalItems()} items - {formatCurrency(totalPrice())}
+                <Button variant='ghost' className="w-fit rounded-full relative">
+                    <ShoppingBag size={16} className="" />
+                    {/* add a number of items thing above the shoppingbag icon  */}
+                    {totalItems() > 0 && (
+                        <span className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                            {totalItems()}
+                        </span>
+                    )}
+
                 </Button>
             </SheetTrigger>
             <SheetContent side="right" className="">
-                   <SheetTitle className="text-xl font-bold">Cart</SheetTitle>
+                <SheetTitle className="text-xl font-bold">Cart</SheetTitle>
                 <div className="flex flex-col space-y-4 p-4 overflow-y-scroll max-h-[calc(100vh-12rem)]">
-                 
+
                     {items.length === 0 ? (
                         <p>Your cart is empty</p>
                     ) : (

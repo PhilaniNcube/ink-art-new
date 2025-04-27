@@ -1,9 +1,13 @@
 import React, { ReactNode } from 'react'
 import DesktopNavigation from './_components/desktop-navigation'
+import MobileNavigation from './_components/mobile-navigation'
 import { Geist } from "next/font/google";
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import '@/app/globals.css'
 import Footer from './_components/footer';
+import { admin, currentUser } from '@/utils/queries/users'
+import { fetchCategories } from '@/utils/queries/categories'
+import { featchFeaturedProducts } from '@/utils/queries/products'
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -20,13 +24,34 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-const PublicLayout = ({ children }: { children: ReactNode }) => {
+const PublicLayout = async ({ children }: { children: ReactNode }) => {
+  // Fetch all the data needed for both desktop and mobile navigation
+  const categoriesPromise = fetchCategories()
+  const featuredProductsPromise = featchFeaturedProducts()
+  const userPromise = currentUser()
+  const adminPromise = admin()
+
+  const [categories, featuredProducts, user, isAdmin] = await Promise.all([
+    categoriesPromise,
+    featuredProductsPromise,
+    userPromise,
+    adminPromise
+  ])
+  
   return (
     <div suppressHydrationWarning className="bg-background text-foreground">
       <NuqsAdapter>
-
         <DesktopNavigation />
-        {children}
+        {/* Add padding bottom on mobile to account for the mobile navigation bar */}
+        <div className="pb-16 lg:pb-0">
+          {children}
+        </div>
+        <MobileNavigation 
+          user={user}
+          isAdmin={isAdmin}
+          categories={categories}
+          featuredProducts={featuredProducts}
+        />
         <Footer />
       </NuqsAdapter>
     </div>
