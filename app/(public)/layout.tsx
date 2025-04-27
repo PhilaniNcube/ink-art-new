@@ -37,7 +37,7 @@ const PublicLayout = async ({ children }: { children: ReactNode }) => {
     userPromise,
     adminPromise
   ])
-  
+
   return (
     <div suppressHydrationWarning className="bg-background text-foreground">
       <NuqsAdapter>
@@ -46,11 +46,7 @@ const PublicLayout = async ({ children }: { children: ReactNode }) => {
         <div className="pb-16 lg:pb-0">
           {children}
         </div>
-        <MobileNavigation 
-          user={user}
-          isAdmin={isAdmin}
-          categories={categories}
-          featuredProducts={featuredProducts}
+        <MobileNavigation
         />
         <Footer />
       </NuqsAdapter>
