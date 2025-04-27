@@ -25,12 +25,10 @@ export function ImageDisplay({
     height,
     className = "",
     defaultView = "front",
-    hoverView = "side"
+    hoverView = "context-1"
 }: ImageDisplayProps) {
 
-    console.log('ImageDisplay Props:', {
-        images,
-    });
+  
 
 
     // Find the default image (front view)

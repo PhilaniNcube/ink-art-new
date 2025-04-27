@@ -19,18 +19,30 @@ const FeaturedProducts = async () => {
     return (
         <section className="container mx-auto py-4 mt-12">
             <h2 className="text-2xl font-bold mb-4 text-center">Featured Products</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                {products.map((product) => (
-                    <Link href={`/products/${product.id}`} key={product.id} className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {products.map((product) => {
+
+                    // I want to sort the images by largest to smallest size but this is determined by the price of the variant
+                    // so I will sort the variants by price and then get the first image of the first variant
+                    const sortedVariants = product.variants.sort((a, b) => a.price - b.price)
+                    const firstVariant = sortedVariants[0]
+                    
+                    // now get all the images of the first variant, there is no image property on the variant but the image object contains the variant id so get all the images were the variant id matches that of the firstVariant
+                    const images = product.images.filter((image) => image.variant_id === firstVariant.id)
+                    
+
+                        return (
+                        <Link href={`/products/${product.id}`} key={product.id} className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center">
                         <ImageDisplay
-                            images={product.images}
+                            images={images}
                             altText={product.title}
                             width={300}
                             height={500}
-                            className="w-full h-48 object-cover rounded-lg mb-4"
+                            className="w-full object-cover rounded-lg mb-4"
                         />
                     </Link>
-                ))}
+                    )
+                    })}
             </div>
         </section>
     )
