@@ -1,3 +1,4 @@
+import { ImageDisplay } from '@/components/ui/image-display'
 import { fetchCategoryBySlug } from '@/utils/queries/categories'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -23,10 +24,16 @@ const CategoryDetails = async ({ slug }: { slug: string }) => {
 
                 </div>
             </div>
-            <div className="container mx-auto py-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            <div className="container mx-auto py-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                 {products.map((product) => (
                     <Link href={`/products/${product.id}`} key={product.id} className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center">
-                        <Image width={300} height={500} src={product.images[0].src} alt={product.title} className="w-full h-48 object-cover rounded-lg mb-4" />
+                        <ImageDisplay
+                            images={product.images}
+                            altText={product.title}
+                            width={400}
+                            height={400}
+                            className="w-full object-cover rounded-lg mb-2"
+                        />
                     </Link>
                 ))}
             </div>
