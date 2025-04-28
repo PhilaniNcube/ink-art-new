@@ -40,7 +40,7 @@ const FilteredProducts = async ({ categories, query }: {
                                     altText={product.title}
                                     width={500}
                                     height={500}
-                                    className="w-full object-cover rounded-lg mb-4"
+                                    className="w-full object-cover rounded-lg"
                                 />
                             </Link>
                         )
