@@ -34,7 +34,7 @@ const FilteredProducts = async ({ categories, query }: {
                         const images = product.images.filter((image) => image.variant_id === firstVariant.id)
 
                         return (
-                            <Link href={`/products/${product.id}`} key={product.id} className="bg-white rounded-lg aspect-square overflow-hidden shadow-md p-4 flex flex-col items-center">
+                            <Link href={`/products/${product.id}`} key={product.id} className="bg-white rounded-lg aspect-square overflow-hidden shadow-md flex flex-col items-center">
                                 <ImageDisplay
                                     images={images}
                                     altText={product.title}
