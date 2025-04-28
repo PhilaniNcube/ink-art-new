@@ -27,14 +27,9 @@ import {
 } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { formatCurrency } from "@/lib/utils"
 
 // Helper function to format currency
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(amount)
-}
 
 type OrderHistoryProps = {
   orders: any[] | null

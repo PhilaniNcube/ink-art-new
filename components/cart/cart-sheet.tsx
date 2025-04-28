@@ -2,15 +2,12 @@
 
 import { useCart } from "@/hooks/use-cart";
 import { Button } from "@/components/ui/button";
-
-import { ShoppingBag, Trash, Trash2 } from "lucide-react";
+import {  ShoppingBag, Trash, Trash2 } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
-
-
+import Link from "next/link";
 import React from 'react'
 import { Sheet, SheetContent, SheetFooter, SheetTitle, SheetTrigger } from "../ui/sheet";
-import { Separator } from "@radix-ui/react-separator";
-import { useCartStore } from "@/store/cart";
+
 
 const CartSheet = () => {
 
@@ -81,7 +78,9 @@ const CartSheet = () => {
                     <div className="w-full flex flex-col space-y-4">
                         <p className="text-lg font-bold">Sub Total: {formatCurrency(totalPrice())}</p>
                         <Button className="bg-blue-500">
-                            Checkout
+                            <Link href="/checkout" className="text-white">
+                                Checkout
+                            </Link>
                         </Button>
                     </div>
 

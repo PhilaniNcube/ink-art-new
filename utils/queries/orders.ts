@@ -5,7 +5,7 @@ export async function fetchAllOrders() {
     const supabase = await createClient()
 
     // write a query to get all orders from the orders table
-    const { data, error } = await supabase.from("orders").select("*")
+    const { data, error } = await supabase.from("orders").select("*").order("created_at", { ascending: false })
 
     if (error) {
         console.error("Error fetching all orders:", error)
