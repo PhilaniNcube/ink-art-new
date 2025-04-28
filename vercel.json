@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/jobs/products/new",
+      "schedule": "0 0 */3 * *"
+    }
+  ]
+}
