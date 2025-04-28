@@ -95,3 +95,21 @@ export async function fetchUserOrders(userId: string) {
 
     return data
 }
+
+
+export async function fetchOrderById(orderId: string) {
+    const supabase = await createClient()
+
+    const { data, error } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("id", orderId)
+        .single()
+
+    if (error) {
+        console.error("Error fetching order by ID:", error)
+        return null
+    }
+
+    return data
+}
