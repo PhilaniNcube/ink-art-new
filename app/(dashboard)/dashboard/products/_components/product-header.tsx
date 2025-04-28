@@ -10,6 +10,10 @@ import { UpdateProductTitleDialog } from '../../_components/update-product-title
 import UnlockProduct from './unlock-product'
 
 const ProductHeader = ({ product }: { product: Database['public']['Tables']['products']['Row'] }) => {
+
+    console.log("Visible", product.visible)
+    console.log("Locked", product.is_locked)
+
     return (
         <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-6">
             <Link href="/dashboard/products" className="flex items-center">

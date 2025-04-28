@@ -23,7 +23,7 @@ export type PrintifyProduct = {
   print_areas: PrintAreas;
   print_details: { print_on_side: string } | null;
   sales_channel_properties?: string[] | null;
-   is_printify_express_eligible: boolean,
+  is_printify_express_eligible: boolean,
   is_printify_express_enabled: boolean,
   is_economy_shipping_eligible: boolean,
   is_economy_shipping_enabled: boolean,
