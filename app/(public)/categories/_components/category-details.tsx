@@ -26,13 +26,13 @@ const CategoryDetails = async ({ slug }: { slug: string }) => {
             </div>
             <div className="container mx-auto py-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                 {products.map((product) => (
-                    <Link href={`/products/${product.id}`} key={product.id} className="bg-white rounded-lg aspect-square overflow-hidden shadow-md p-4 flex flex-col items-center">
+                    <Link href={`/products/${product.id}`} key={product.id} className="bg-white rounded-lg aspect-square overflow-hidden shadow-md flex flex-col items-center">
                         <ImageDisplay
                             images={product.images}
                             altText={product.title}
                             width={400}
                             height={400}
-                            className="w-full object-cover rounded-lg mb-2"
+                            className="w-full object-cover rounded-lg"
                         />
                     </Link>
                 ))}
