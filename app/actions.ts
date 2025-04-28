@@ -1,6 +1,5 @@
 "use server";
 
-import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -132,3 +131,10 @@ export const signOutAction = async () => {
   await supabase.auth.signOut();
   return redirect("/sign-in");
 };
+function encodedRedirect(arg0: string, arg1: string, message: string) {
+  
+  const encodedMessage = encodeURIComponent(message);
+  const redirectUrl = `${arg1}?message=${encodedMessage}`;  
+  redirect(redirectUrl);
+}
+
