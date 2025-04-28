@@ -7,9 +7,9 @@ const FeaturedProductsSkeleton = () => {
   return (
     <section className="container mx-auto py-4 mt-12">
         <h2 className="text-2xl font-bold mb-4 text-center">Featured Products</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {skeletonProducts.map((_, index) => (
-                <div key={index} className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center">
+                <div key={index} className="bg-white rounded-lg shadow-md p-4 aspect-square flex flex-col items-center">
                     <Skeleton className="w-full h-48 rounded-lg mb-4" />
                 </div>
             ))}
