@@ -1,9 +1,10 @@
 
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { CheckCircle, CreditCard } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { fetchOrderById } from '@/utils/queries/orders';
+import { PayPalPaymentButtons } from '@/components/checkout/paypal-payment-buttons';
 
 // Static metadata
 export const metadata = {
@@ -42,10 +43,13 @@ export default async function OrderConfirmationPage({
             <CheckCircle className="h-10 w-10 text-green-600" />
           </div>
           <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl">
-            Thank You for Your Order!
+           {orderDetails.paid ? 'Thank you for your order!' : 'Order Confirmation'}
           </h1>
           <p className="text-muted-foreground">
-            Your order has been received. We'll send you a confirmation email shortly.
+            {orderDetails.paid
+              ? 'Your order has been successfully placed and is being processed.'
+              : 'Your order has been received and is awaiting payment.'
+            }
           </p>
           <p className="font-semibold">Order ID: {orderId}</p>
         </div>
@@ -67,13 +71,10 @@ export default async function OrderConfirmationPage({
               <p className="text-amber-600 font-medium">
                 Your order is awaiting payment
               </p>
-              <Button className="bg-[#0070ba] hover:bg-[#005ea6]">
-               <CreditCard className="h-4 w-4 mr-2" />
-                Pay with PayPal
-              </Button>
-              <p className="text-xs text-muted-foreground mt-2">
-                You will be redirected to PayPal to complete your payment
-              </p>
+              <PayPalPaymentButtons 
+                clientId={process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!} 
+                orderId={orderId}
+              />
             </div>
           )}
         </div>
