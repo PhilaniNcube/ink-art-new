@@ -28,19 +28,19 @@ export function ImageDisplay({
     hoverView = "context-1"
 }: ImageDisplayProps) {
 
-  
+
 
 
     // Find the default image (front view)
     const defaultImage = useMemo(() => {
-        return images.filter((image) => image.src.includes(`camera_label=${defaultView}`))[0] || 
-               images.filter((image) => image.src.includes(`camera_label=${defaultView}`))[1]; // Fallback to first image if no matching view found
+        return images.filter((image) => image.src.includes(`camera_label=${defaultView}`))[0] ||
+            images.filter((image) => image.src.includes(`camera_label=${defaultView}`))[1]; // Fallback to first image if no matching view found
     }, [images, defaultView]);
 
     // Find the hover image (side view)
     const hoverImage = useMemo(() => {
-        return images.find((image) => image.src.includes(`camera_label=${hoverView}`)) || 
-               images.find((image) => image.src.includes(`camera_label=context-2`)); // Fallback to first image if no matching view found
+        return images.find((image) => image.src.includes(`camera_label=${hoverView}`)) ||
+            images.find((image) => image.src.includes(`camera_label=context-2`)); // Fallback to first image if no matching view found
     }, [images, hoverView]);
 
     // If we don't have both images, just show the default one
@@ -51,24 +51,24 @@ export function ImageDisplay({
     return (
         <div className="group relative w-full h-full overflow-hidden">
             {/* Default image (visible by default) */}
-            <Image
+            <img
                 src={defaultImage.src}
                 alt={altText}
                 width={width}
                 height={height}
                 className={`w-full transition-opacity duration-300 ${className} group-hover:opacity-0`}
-                priority={true}
+                // priority={true}
             />
-            
+
             {/* Hover image (hidden by default, shown on hover) */}
             {hoverImage && hoverImage.src !== defaultImage.src && (
-                <Image
+                <img
                     src={hoverImage.src}
                     alt={`${altText} (alternative view)`}
                     width={width}
                     height={height}
                     className={`absolute inset-0 w-full opacity-0 transition-opacity duration-300 ${className} group-hover:opacity-100`}
-                    priority={true}
+                    // priority={true}
                 />
             )}
         </div>
