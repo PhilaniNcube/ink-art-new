@@ -39,7 +39,7 @@ export type PrintifyResponse = {
   first_page_url: string;
   from: number;
   next_page_url: string;
-  last_page_url: string; 
+  last_page_url: string;
   current_page: number;
   last_page: number;
   total: number;
@@ -49,7 +49,7 @@ export type PrintifyResponse = {
     url: string | null;
     label: string;
     active: boolean;
-    }>;
+  }>;
 };
 
 // Schema for validating query parameters
@@ -64,7 +64,9 @@ export async function GET(request: Request) {
     const apiKey = process.env.PRINTIFY_API_TOKEN; // Use non-public variable
 
     if (!apiKey) {
-      console.error("Printify API token is missing. Ensure PRINTIFY_API_TOKEN is set.");
+      console.error(
+        "Printify API token is missing. Ensure PRINTIFY_API_TOKEN is set."
+      );
       return NextResponse.json(
         { error: "Printify API key is not configured" },
         { status: 500 }
@@ -75,10 +77,13 @@ export async function GET(request: Request) {
     const url = new URL(request.url);
     const rawParams = Object.fromEntries(url.searchParams.entries());
     const queryResult = querySchema.safeParse(rawParams);
-    
+
     if (!queryResult.success) {
       return NextResponse.json(
-        { error: "Invalid query parameters", details: queryResult.error.format() },
+        {
+          error: "Invalid query parameters",
+          details: queryResult.error.format(),
+        },
         { status: 400 }
       );
     }
@@ -87,17 +92,16 @@ export async function GET(request: Request) {
 
     // Build query string dynamically
     const queryParams = new URLSearchParams({
-        page: page.toString(),
-        limit: limit.toString(),
-    });
-
-    // Make request to Printify API
+      page: page.toString(),
+      limit: limit.toString(),
+    }); // Make request to Printify API
     // Use the validated & defaulted page and limit
-    const printifyUrl = `https://api.printify.com/v1/shops/9354978/products.json?${queryParams.toString()}`;
-    
+    const shopId = process.env.PRINTIFY_SHOP_ID || "9354978";
+    const printifyUrl = `https://api.printify.com/v1/shops/${shopId}/products.json?${queryParams.toString()}`;
+
     const response = await fetch(printifyUrl, {
       headers: {
-        "Authorization": `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       cache: "no-store", // Ensure we get fresh data
@@ -108,23 +112,23 @@ export async function GET(request: Request) {
     if (!response.ok) {
       const errorData = await response.json().catch(() => null);
       return NextResponse.json(
-        { 
+        {
           error: "Failed to fetch products from Printify",
           status: response.status,
-          details: errorData 
+          details: errorData,
         },
         { status: response.status }
       );
     }
 
     const products: PrintifyResponse = await response.json();
-    
-    return NextResponse.json(products, { 
+
+    return NextResponse.json(products, {
       status: 200,
       headers: {
         // Cache the response for 5 minutes to avoid hitting rate limits
-        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60',
-      }
+        "Cache-Control": "public, s-maxage=300, stale-while-revalidate=60",
+      },
     });
   } catch (error) {
     console.error("Error fetching Printify products:", error);

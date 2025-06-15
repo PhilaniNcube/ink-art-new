@@ -38,7 +38,6 @@ export async function fetchAllProducts() {
   return data;
 }
 
-
 export async function featchFeaturedProducts() {
   const supabase = await createClient();
 
@@ -56,20 +55,19 @@ export async function featchFeaturedProducts() {
   return data;
 }
 
-
 export async function fetchFilteredProducts({
   categories,
-  query
+  query,
 }: {
   categories?: string;
   query?: string;
 }) {
   const supabase = await createClient();
 
-  const result = await supabase.rpc('get_filtered_products', {
+  const result = await supabase.rpc("get_filtered_products", {
     category_slugs: categories ? categories : "",
     title_search: query ? query : "",
-  })
+  });
 
   if (result.error) {
     console.error("Error fetching filtered products:", result.error);
@@ -79,10 +77,7 @@ export async function fetchFilteredProducts({
   console.log("Filtered products:", result.data.length);
 
   return result.data;
-
-
 }
-
 
 export async function fetchProductById(productId: string) {
   const supabase = await createClient();
@@ -102,18 +97,19 @@ export async function fetchProductById(productId: string) {
 }
 
 export async function fetchPrintifyProductById(productId: string) {
-
   const apiToken = process.env.PRINTIFY_WEBHOOKS_TOKEN;
-  const shopId = '9354978';
+  const shopId = process.env.PRINTIFY_SHOP_ID || "9354978";
 
-
-  const res = await fetch(`https://api.printify.com/v1/shops/${shopId}/products/${productId}.json`, {
-    method: "GET",
-    headers: {
-      "Authorization": `Bearer ${apiToken}`,
-      "Content-Type": "application/json",
-    },
-  });
+  const res = await fetch(
+    `https://api.printify.com/v1/shops/${shopId}/products/${productId}.json`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${apiToken}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
   const data = await res.json();
 
   if (!res.ok) {
@@ -122,5 +118,4 @@ export async function fetchPrintifyProductById(productId: string) {
   }
 
   return data as PrintifyProduct;
-
 }

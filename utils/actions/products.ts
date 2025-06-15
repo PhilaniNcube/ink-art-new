@@ -1,165 +1,165 @@
-'use server';
+"use server";
 
 import { revalidatePath } from "next/cache";
 import { admin } from "../queries/users";
 import { createClient } from "../supabase/server";
 
 export async function deleteProduct(prevState: unknown, formData: FormData) {
+  const productId = formData.get("productId") as string; // Ensure productId is a string
 
+  console.log("Deleting product with ID:", productId); // Log the productId for debugging
 
+  if (!productId) {
+    console.error("Product ID is required");
+    return { success: false, error: "Product ID is required" };
+  }
 
-    const productId = formData.get("productId") as string; // Ensure productId is a string  
+  const supabase = await createClient();
 
-    console.log("Deleting product with ID:", productId); // Log the productId for debugging
+  // find this product in the product_categories table and delete it
+  const { error: deleteProductCategoriesError } = await supabase
+    .from("product_categories")
+    .delete()
+    .eq("product_id", productId);
+  if (deleteProductCategoriesError) {
+    console.error(
+      "Error deleting product categories:",
+      deleteProductCategoriesError
+    );
+    return { success: false, error: deleteProductCategoriesError.message };
+  }
 
+  const { error, data } = await supabase
+    .from("products")
+    .delete()
+    .eq("id", productId);
 
-    if (!productId) {
-        console.error("Product ID is required");
-        return { success: false, error: "Product ID is required" };
-    }
+  if (error) {
+    console.error("Error deleting product:", error);
+    return { success: false, error };
+  }
 
-    const supabase = await createClient();
+  revalidatePath("/dashboard/products");
 
-    // find this product in the product_categories table and delete it
-    const { error: deleteProductCategoriesError } = await supabase.from("product_categories").delete().eq("product_id", productId);
-    if (deleteProductCategoriesError) {
-        console.error("Error deleting product categories:", deleteProductCategoriesError);
-        return { success: false, error: deleteProductCategoriesError.message };
-    }
-
-
-
-    const { error, data } = await supabase
-        .from("products")
-        .delete()
-        .eq("id", productId);
-
-    if (error) {
-        console.error("Error deleting product:", error);
-        return { success: false, error };
-    }
-
-
-
-    revalidatePath("/dashboard/products");
-
-    return { success: true };
+  return { success: true };
 }
 
 export async function publishPrintifyProduct(productId: string) {
+  const apiToken = process.env.PRINTIFY_WEBHOOKS_TOKEN;
+  const shopId = process.env.PRINTIFY_SHOP_ID || "9354978";
 
-    const apiToken = process.env.PRINTIFY_WEBHOOKS_TOKEN;
-    const shopId = '9354978';
+  const url = `https://api.printify.com/v1/shops/${shopId}/products/${productId}/publishing_succeeded.json`;
 
-    const url = `https://api.printify.com/v1/shops/${shopId}/products/${productId}/publishing_succeeded.json`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiToken}`,
+    },
+    body: JSON.stringify({
+      title: true,
+      description: true,
+      images: true,
+      variants: true,
+      tags: true,
+      keyFeatures: true,
+      shipping_template: true,
+    }),
+  });
+  const data = await res.json();
 
-    const res = await fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${apiToken}`,
-        },
-        body: JSON.stringify({
-            "title": true,
-            "description": true,
-            "images": true,
-            "variants": true,
-            "tags": true,
-            "keyFeatures": true,
-            "shipping_template": true
-        }),
-    });
-    const data = await res.json();
-
-    console.log("Publishing product:", data);
-    if (res.status !== 200) {
-        console.error("Error publishing product:", data);
-        return { success: false, error: data };
-    }
-    console.log("Product published successfully:", data);
-    revalidatePath("/dashboard/products");
-    return { success: true, data };
-
-
+  console.log("Publishing product:", data);
+  if (res.status !== 200) {
+    console.error("Error publishing product:", data);
+    return { success: false, error: data };
+  }
+  console.log("Product published successfully:", data);
+  revalidatePath("/dashboard/products");
+  return { success: true, data };
 }
 
+export async function updatePrintifyProductTitle(
+  productId: string,
+  title: string
+) {
+  const apiToken = process.env.PRINTIFY_WEBHOOKS_TOKEN;
+  const shopId = process.env.PRINTIFY_SHOP_ID || "9354978";
 
-export async function updatePrintifyProductTitle(productId: string, title: string) {
-    const apiToken = process.env.PRINTIFY_WEBHOOKS_TOKEN;
-    const shopId = '9354978';
+  const url = `https://api.printify.com/v1/shops/${shopId}/products/${productId}.json`;
 
-    const url = `https://api.printify.com/v1/shops/${shopId}/products/${productId}.json`;
+  const res = await fetch(url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiToken}`,
+    },
+    body: JSON.stringify({
+      title: title,
+    }),
+  });
 
-    const res = await fetch(url, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${apiToken}`,
-        },
-        body: JSON.stringify({
-            "title": title,
-        }),
-    });
+  const data = await res.json();
 
-    const data = await res.json();
+  console.log("Updating product:", data);
+  if (res.status !== 200) {
+    console.error("Error updating product:", data);
+    return { success: false, error: data };
+  }
 
-    console.log("Updating product:", data);
-    if (res.status !== 200) {
-        console.error("Error updating product:", data);
-        return { success: false, error: data };
-    }
+  const supabase = await createClient();
 
-    const supabase = await createClient();
+  // Update the product title in the database
+  const { error } = await supabase
+    .from("products")
+    .update({ title })
+    .eq("id", productId);
+  if (error) {
+    console.error("Error updating product title in database:", error);
+    return { success: false, error };
+  }
 
-    // Update the product title in the database
-    const { error } = await supabase.from("products").update({ title }).eq("id", productId);
-    if (error) {
-        console.error("Error updating product title in database:", error);
-        return { success: false, error };
-    }
-
-    console.log("Product published successfully:", data);
-    revalidatePath("/dashboard/products");
-    return { success: true, data };
+  console.log("Product published successfully:", data);
+  revalidatePath("/dashboard/products");
+  return { success: true, data };
 }
-
 
 export async function unlockProduct(productId: string) {
-    const apiToken = process.env.PRINTIFY_WEBHOOKS_TOKEN;
-    const shopId = '9354978';
+  const apiToken = process.env.PRINTIFY_WEBHOOKS_TOKEN;
+  const shopId = process.env.PRINTIFY_SHOP_ID || "9354978";
 
-    const url = `https://api.printify.com/v1/shops/${shopId}/products/${productId}.json`;
+  const url = `https://api.printify.com/v1/shops/${shopId}/products/${productId}.json`;
 
-    const res = await fetch(url, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${apiToken}`,
-        },
-        body: JSON.stringify({
-            "is_locked": false,
-        }),
-    });
-    const data = await res.json();
+  const res = await fetch(url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiToken}`,
+    },
+    body: JSON.stringify({
+      is_locked: false,
+    }),
+  });
+  const data = await res.json();
 
-    const supabase = await createClient();
+  const supabase = await createClient();
 
-    console.log("Unlocking product:", data);
-    if (res.status !== 200) {
-        console.error("Error unlocking product:", data);
-        return { success: false, error: data };
-    }
+  console.log("Unlocking product:", data);
+  if (res.status !== 200) {
+    console.error("Error unlocking product:", data);
+    return { success: false, error: data };
+  }
 
-    // Update the product title in the database
-    const { error } = await supabase.from("products").update({ is_locked: false }).eq("id", productId);
-    if (error) {
-        console.error("Error unlocking product in database:", error);
-        return { success: false, error };
-    }
-    
+  // Update the product title in the database
+  const { error } = await supabase
+    .from("products")
+    .update({ is_locked: false })
+    .eq("id", productId);
+  if (error) {
+    console.error("Error unlocking product in database:", error);
+    return { success: false, error };
+  }
 
-    console.log("Product unlocked successfully:", data);
-    revalidatePath("/dashboard/products");
-    return { success: true, data };
+  console.log("Product unlocked successfully:", data);
+  revalidatePath("/dashboard/products");
+  return { success: true, data };
 }
-
