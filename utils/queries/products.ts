@@ -27,7 +27,7 @@ export async function fetchAllProducts() {
 
   const { data, error } = await supabase
     .from("products")
-    .select("*")
+    .select("*, category(*)")
     .order("title", { ascending: true });
 
   if (error) {

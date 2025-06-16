@@ -1,8 +1,10 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect } from 'react'
-import { Database } from '@/utils/supabase/types'
-import { columns } from './columns' // Import the defined columns
+import React, { useState, useEffect, useCallback } from "react";
+import { Database } from "@/utils/supabase/types";
+import { columns } from "./columns"; // Import the defined columns
+import { ProductCategoryDisplay } from "@/components/products/product-category-display";
+import { useRouter } from "next/navigation";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -15,8 +17,8 @@ import {
   getSortedRowModel,
   useReactTable,
   PaginationState,
-} from "@tanstack/react-table"
-import { useQueryState } from 'nuqs'
+} from "@tanstack/react-table";
+import { useQueryState } from "nuqs";
 
 import {
   Table,
@@ -25,45 +27,108 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-type Product = Database['public']['Tables']['products']['Row']
+type Product = Database["public"]["Tables"]["products"]["Row"];
 
-const ProductsTable = ({ products }: { products: Product[] }) => {
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = useState({})
-  
+interface ProductsTableProps {
+  products: Product[];
+}
+
+const ProductsTable = ({ products }: ProductsTableProps) => {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
+
   // URL state for pagination with nuqs
-  const [pageIndex, setPageIndex] = useQueryState('page', { defaultValue: '0' })
-  const [pageSize, setPageSize] = useQueryState('size', { defaultValue: '10' })
-  
+  const [pageIndex, setPageIndex] = useQueryState("page", {
+    defaultValue: "0",
+  });
+  const [pageSize, setPageSize] = useQueryState("size", { defaultValue: "10" });
+
   // Create pagination state for the table
   const pagination = {
     pageIndex: parseInt(pageIndex),
     pageSize: parseInt(pageSize),
-  }
-  
+  };
+
   // Handle pagination state changes
   const setPagination = (updater: any) => {
-    const nextState = typeof updater === 'function' ? updater(pagination) : updater
-    setPageIndex(nextState.pageIndex.toString())
-    setPageSize(nextState.pageSize.toString())
-  }
+    const nextState =
+      typeof updater === "function" ? updater(pagination) : updater;
+    setPageIndex(nextState.pageIndex.toString());
+    setPageSize(nextState.pageSize.toString());
+  };
+
+  const router = useRouter();
+  // Handle category update callback
+  const handleCategoryUpdated = useCallback(
+    (
+      productId: string,
+      newCategoryId: string | null,
+      newCategoryTitle: string | null
+    ) => {
+      console.log(
+        "Category updated:",
+        productId,
+        newCategoryId,
+        newCategoryTitle
+      );
+      // The server action already handles revalidatePath, but we can trigger a manual refresh if needed
+      router.refresh();
+    },
+    [router]
+  );
+
+  // Create columns with callback
+  const columnsWithCallbacks = React.useMemo(() => {
+    return columns.map((column) => {
+      if (
+        column.id === "category" ||
+        (column as any).accessorKey === "category"
+      ) {
+        return {
+          ...column,
+          cell: ({ row }: any) => {
+            const product = row.original;
+            return (
+              <ProductCategoryDisplay
+                productId={product.id}
+                categoryId={product.category}
+                categoryTitle={
+                  product.category && (product as any).category?.title
+                    ? (product as any).category.title
+                    : null
+                }
+                onCategoryUpdated={handleCategoryUpdated}
+              />
+            );
+          },
+        };
+      }
+      return column;
+    });
+  }, [handleCategoryUpdated]);
 
   const table = useReactTable({
     data: products ?? [],
-    columns,
+    columns: columnsWithCallbacks,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -82,10 +147,10 @@ const ProductsTable = ({ products }: { products: Product[] }) => {
     },
     manualPagination: false, // Set to true if using server-side pagination
     pageCount: Math.ceil((products?.length || 0) / pagination.pageSize),
-  })
+  });
 
   if (!products) {
-    return <div>Loading products or error fetching...</div>
+    return <div>Loading products or error fetching...</div>;
   }
 
   return (
@@ -94,9 +159,9 @@ const ProductsTable = ({ products }: { products: Product[] }) => {
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter by name..."
-          value={(table.getColumn('title')?.getFilterValue() as string) ?? ""}
+          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn('title')?.setFilterValue(event.target.value)
+            table.getColumn("title")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
@@ -122,7 +187,7 @@ const ProductsTable = ({ products }: { products: Product[] }) => {
                   >
                     {column.id}
                   </DropdownMenuCheckboxItem>
-                )
+                );
               })}
           </DropdownMenuContent>
         </DropdownMenu>
@@ -144,7 +209,7 @@ const ProductsTable = ({ products }: { products: Product[] }) => {
                             header.getContext()
                           )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -187,7 +252,7 @@ const ProductsTable = ({ products }: { products: Product[] }) => {
           <Select
             value={pagination.pageSize.toString()}
             onValueChange={(value) => {
-              table.setPageSize(Number(value))
+              table.setPageSize(Number(value));
             }}
           >
             <SelectTrigger className="h-8 w-[70px]">
@@ -202,7 +267,7 @@ const ProductsTable = ({ products }: { products: Product[] }) => {
             </SelectContent>
           </Select>
         </div>
-        
+
         <div className="flex items-center space-x-2">
           <div className="flex w-[100px] items-center justify-center text-sm font-medium">
             Page {table.getState().pagination.pageIndex + 1} of{" "}
@@ -227,7 +292,7 @@ const ProductsTable = ({ products }: { products: Product[] }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProductsTable
+export default ProductsTable;

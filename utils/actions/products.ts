@@ -163,3 +163,66 @@ export async function unlockProduct(productId: string) {
   revalidatePath("/dashboard/products");
   return { success: true, data };
 }
+
+export async function updateProductCategory(
+  prevState: unknown,
+  formData: FormData
+) {
+  const productId = formData.get("productId") as string;
+  const categoryId = formData.get("categoryId") as string;
+
+  if (!productId) {
+    return {
+      success: false,
+      error: "Product ID is required",
+    };
+  }
+
+  // categoryId can be empty string to remove category (set to null)
+  const categoryValue =
+    categoryId && categoryId.trim() !== "" ? categoryId : null;
+
+  const supabase = await createClient();
+
+  try {
+    // Update the product's category
+    const { error, data } = await supabase
+      .from("products")
+      .update({ category: categoryValue })
+      .eq("id", productId)
+      .select("id, title, category");
+
+    if (error) {
+      console.error("Error updating product category:", error);
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+
+    if (!data || data.length === 0) {
+      return {
+        success: false,
+        error: "Product not found",
+      };
+    }
+
+    console.log("Product category updated successfully:", data[0]);
+
+    // Revalidate the dashboard products page to show updated data
+    revalidatePath("/dashboard/products");
+    revalidatePath("/dashboard");
+
+    return {
+      success: true,
+      data: data[0],
+      message: `Product category updated successfully`,
+    };
+  } catch (error) {
+    console.error("Unexpected error updating product category:", error);
+    return {
+      success: false,
+      error: "An unexpected error occurred",
+    };
+  }
+}
