@@ -1,12 +1,14 @@
 import { withPayload } from '@payloadcms/next/withPayload'
+import { min } from 'date-fns';
 
 
 const nextConfig = {
   /* config options here */
    experimental: {
-    reactCompiler: false,
+    reactCompiler: true,
   },
   images: {
+    minimumCacheTTL: 2678400,
     remotePatterns: [
       {
         protocol: "https",

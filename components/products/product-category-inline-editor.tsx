@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, startTransition } from "react";
 import { useActionState } from "react";
 import { updateProductCategory } from "@/utils/actions/products";
 import { fetchCategoriesClient } from "@/utils/queries/categories-client";
@@ -108,7 +108,9 @@ export function ProductCategoryInlineEditor({
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    formAction(formData);
+    startTransition(() => {
+      formAction(formData);
+    });
   };
 
   if (isLoadingCategories) {

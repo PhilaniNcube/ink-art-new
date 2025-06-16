@@ -1,6 +1,7 @@
 "use client";
 
 import { ProductImage } from "@/utils/supabase/types";
+import Image from "next/image";
 import React from "react";
 
 const ProductImages = ({ images }: { images: ProductImage[] }) => {
@@ -16,7 +17,9 @@ const ProductImages = ({ images }: { images: ProductImage[] }) => {
       {/* Main Image */}
       <div className="w-full">
         <div className="w-full aspect-square rounded-lg overflow-hidden bg-gray-100">
-          <img
+          <Image
+            width={500}
+            height={500}
             src={selectedImage.src}
             alt={`Product image`}
             className="w-full h-full object-cover"
@@ -37,7 +40,9 @@ const ProductImages = ({ images }: { images: ProductImage[] }) => {
               }}
               onClick={() => setSelectedImage(image)}
             >
-              <img
+              <Image
+                width={80}
+                height={80}
                 src={image.src}
                 alt={`Product thumbnail`}
                 className="w-full h-full object-cover"
