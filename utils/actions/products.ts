@@ -50,6 +50,12 @@ export async function publishPrintifyProduct(productId: string) {
 
   const url = `https://api.printify.com/v1/shops/${shopId}/products/${productId}/publishing_succeeded.json`;
 
+  // Prepare the external object for the request body
+  const externalData = {
+    id: productId, // Use provided external ID or fallback to productId
+    handle: `https://inkart.store/products/${productId}`, // Use provided handle or create a default one
+  };
+
   const res = await fetch(url, {
     method: "POST",
     headers: {
@@ -57,24 +63,44 @@ export async function publishPrintifyProduct(productId: string) {
       Authorization: `Bearer ${apiToken}`,
     },
     body: JSON.stringify({
-      title: true,
-      description: true,
-      images: true,
-      variants: true,
-      tags: true,
-      keyFeatures: true,
-      shipping_template: true,
+      external: externalData,
     }),
   });
-  const data = await res.json();
 
-  console.log("Publishing product:", data);
+  console.log("Setting product publish status to succeeded:", {
+    productId,
+    external: externalData,
+  });
+
   if (res.status !== 200) {
-    console.error("Error publishing product:", data);
-    return { success: false, error: data };
+    const errorData = await res.json();
+    console.error("Error setting product publish status:", errorData);
+    return { success: false, error: errorData };
   }
-  console.log("Product published successfully:", data);
+
+  const data = await res.json();
+  const supabase = await createClient();
+
+  // Update the product status in the database
+  const { error } = await supabase
+    .from("products")
+    .update({
+      is_locked: false,
+      // external_id: externalData.id,
+      // external_handle: externalData.handle,
+    })
+    .eq("id", productId)
+    .select("id, title, is_locked");
+
+  if (error) {
+    console.error("Error updating product status in database:", error);
+    return { success: false, error };
+  }
+
+  console.log("Product publish status set to succeeded:", data);
   revalidatePath("/dashboard/products");
+  revalidatePath("/dashboard");
+  revalidatePath(`/dashboard/products/${productId}`);
   return { success: true, data };
 }
 
@@ -127,39 +153,55 @@ export async function unlockProduct(productId: string) {
   const apiToken = process.env.PRINTIFY_WEBHOOKS_TOKEN;
   const shopId = process.env.PRINTIFY_SHOP_ID || "9354978";
 
-  const url = `https://api.printify.com/v1/shops/${shopId}/products/${productId}.json`;
+  const url = `https://api.printify.com/v1/shops/${shopId}/products/${productId}/publishing_succeeded.json`;
+
+  // Prepare the external object for the request body
+  const externalData = {
+    id: productId, // Use provided external ID or fallback to productId
+    handle: `https://inkart.store/products/${productId}`, // Use provided handle or create a default one
+  };
 
   const res = await fetch(url, {
-    method: "PUT",
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${apiToken}`,
     },
     body: JSON.stringify({
-      is_locked: false,
+      external: externalData,
     }),
   });
-  const data = await res.json();
 
-  const supabase = await createClient();
+  console.log("Setting product publish status to succeeded:", {
+    productId,
+    external: externalData,
+  });
 
-  console.log("Unlocking product:", data);
   if (res.status !== 200) {
-    console.error("Error unlocking product:", data);
-    return { success: false, error: data };
+    const errorData = await res.json();
+    console.error("Error setting product publish status:", errorData);
+    return { success: false, error: errorData };
   }
 
-  // Update the product title in the database
+  const data = await res.json();
+  const supabase = await createClient();
+
+  // Update the product status in the database
   const { error } = await supabase
     .from("products")
-    .update({ is_locked: false })
+    .update({
+      is_locked: false,
+      external_id: externalData.id,
+      external_handle: externalData.handle,
+    })
     .eq("id", productId);
+
   if (error) {
-    console.error("Error unlocking product in database:", error);
+    console.error("Error updating product status in database:", error);
     return { success: false, error };
   }
 
-  console.log("Product unlocked successfully:", data);
+  console.log("Product publish status set to succeeded:", data);
   revalidatePath("/dashboard/products");
   return { success: true, data };
 }
@@ -220,6 +262,85 @@ export async function updateProductCategory(
     };
   } catch (error) {
     console.error("Unexpected error updating product category:", error);
+    return {
+      success: false,
+      error: "An unexpected error occurred",
+    };
+  }
+}
+
+export async function toggleProductFeatured(productId: string) {
+  if (!productId) {
+    return {
+      success: false,
+      error: "Product ID is required",
+    };
+  }
+
+  const supabase = await createClient();
+
+  try {
+    // First, get the current featured status from the database
+    const { data: currentProduct, error: fetchError } = await supabase
+      .from("products")
+      .select("featured")
+      .eq("id", productId)
+      .single();
+
+    if (fetchError) {
+      console.error("Error fetching current product status:", fetchError);
+      return {
+        success: false,
+        error: fetchError.message,
+      };
+    }
+
+    if (!currentProduct) {
+      return {
+        success: false,
+        error: "Product not found",
+      };
+    }
+
+    // Toggle the featured status
+    const newFeaturedStatus = !currentProduct.featured;
+
+    const { error, data } = await supabase
+      .from("products")
+      .update({ featured: newFeaturedStatus })
+      .eq("id", productId)
+      .select("id, title, featured");
+
+    if (error) {
+      console.error("Error updating product featured status:", error);
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+
+    if (!data || data.length === 0) {
+      return {
+        success: false,
+        error: "Product not found",
+      };
+    }
+
+    console.log("Product featured status updated successfully:", data[0]);
+
+    // Revalidate the dashboard products page to show updated data
+    revalidatePath("/dashboard/products");
+    revalidatePath("/dashboard");
+
+    return {
+      success: true,
+      data: data[0],
+      message: `Product ${
+        newFeaturedStatus ? "marked as featured" : "removed from featured"
+      }`,
+    };
+  } catch (error) {
+    console.error("Unexpected error updating product featured status:", error);
     return {
       success: false,
       error: "An unexpected error occurred",

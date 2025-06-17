@@ -67,12 +67,6 @@ export const columns = [
             className="h-10 object-cover w-10 rounded-md"
           />
           <span className="text-sm font-medium">{product.title}</span>
-          {product.is_locked && (
-            <UnlockProduct
-              productId={product.id}
-              is_locked={product.is_locked}
-            />
-          )}
         </Link>
       );
     },
