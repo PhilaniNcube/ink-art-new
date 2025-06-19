@@ -1,10 +1,41 @@
-export type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
+export type SearchParams = Promise<{
+  [key: string]: string | string[] | undefined;
+}>;
+
+export type PrintifyBlueprint = {
+  id: number;
+  title: string;
+  description: string;
+  brand: string;
+  model: string;
+  images: string[];
+};
+
+export type Provider = {
+  id: number;
+  title: string;
+};
+
+export type ProviderVariant = {
+  id: number;
+  title: string;
+  options: {
+    depth: string;
+    size: string;
+  };
+  placeholders: {
+    position: string;
+    width: number;
+    height: number;
+  }[];
+  decoration_methods: string[];
+};
 
 export type PrintifyProduct = {
-  id:string;
-  title:string;
-  description:string;
-  tags:string[];
+  id: string;
+  title: string;
+  description: string;
+  tags: string[];
   options: Option[] | null;
   variants: Variant[];
   images: ProductImage[];
@@ -23,12 +54,12 @@ export type PrintifyProduct = {
   print_areas: PrintAreas;
   print_details: { print_on_side: string } | null;
   sales_channel_properties?: string[] | null;
-  is_printify_express_eligible: boolean,
-  is_printify_express_enabled: boolean,
-  is_economy_shipping_eligible: boolean,
-  is_economy_shipping_enabled: boolean,
-  is_deleted: boolean,
-  original_id: string,
+  is_printify_express_eligible: boolean;
+  is_printify_express_enabled: boolean;
+  is_economy_shipping_eligible: boolean;
+  is_economy_shipping_enabled: boolean;
+  is_deleted: boolean;
+  original_id: string;
   views: {
     id: number;
     label: string;
@@ -38,7 +69,7 @@ export type PrintifyProduct = {
       variant_ids: number[];
     }[];
   }[];
-}
+};
 
 export type WebhookProductUpdate = {
   id: string;
@@ -50,12 +81,11 @@ export type WebhookProductUpdate = {
     data: {
       shop_id: string;
       publish_details: any;
-      action: 'create' | 'update' | 'delete';
+      action: "create" | "update" | "delete";
       out_of_stock_publishing: number | null;
-    }
-  }
-}
-
+    };
+  };
+};
 
 export type PrintAreas = {
   background: string;
@@ -84,7 +114,7 @@ export type ProductImage = {
   variant_ids: number[];
   is_selected_for_publishing: boolean;
   order?: any;
-}
+};
 
 export type Variant = {
   id: number;
@@ -110,7 +140,6 @@ export type Option = {
     title: string;
   }[];
   display_in_preview?: boolean;
-
 };
 
 export type OrderItem = {
@@ -122,7 +151,7 @@ export type OrderItem = {
   variantId: number;
   variantSKU: string;
   productTitle: string;
-}
+};
 
 export type Json =
   | string
@@ -429,57 +458,57 @@ export type Database = {
     };
     Functions: {
       get_filtered_products: {
-        Args: { category_slugs: string; title_search: string }
+        Args: { category_slugs: string; title_search: string };
         Returns: {
-          id: string
-          created_at: string
-          title: string
-          description: string
-          tags: Json
-          options: Option[] | null
+          id: string;
+          created_at: string;
+          title: string;
+          description: string;
+          tags: Json;
+          options: Option[] | null;
           variants: Variant[];
-          images: ProductImage[]
-          updated_at: string
-          visible: boolean
-          is_locked: boolean
-          blueprint_id: number
-          user_id: number
-          shop_id: number
-          print_provider_id: number
-          print_areas: PrintAreas
-          print_details: { print_on_side: string } | null
-          sales_channel_properties: Json
-          twodaydelivery_enabled: boolean
-          category: string
-          featured: boolean
-        }[]
-      }
+          images: ProductImage[];
+          updated_at: string;
+          visible: boolean;
+          is_locked: boolean;
+          blueprint_id: number;
+          user_id: number;
+          shop_id: number;
+          print_provider_id: number;
+          print_areas: PrintAreas;
+          print_details: { print_on_side: string } | null;
+          sales_channel_properties: Json;
+          twodaydelivery_enabled: boolean;
+          category: string;
+          featured: boolean;
+        }[];
+      };
       get_monthly_orders_count: {
-        Args: Record<PropertyKey, never>
+        Args: Record<PropertyKey, never>;
         Returns: {
-          this_month_orders_count: number
-          last_month_orders_count: number
+          this_month_orders_count: number;
+          last_month_orders_count: number;
         }[];
       };
       get_monthly_revenue: {
-        Args: Record<PropertyKey, never>
+        Args: Record<PropertyKey, never>;
         Returns: {
-          this_month_revenue: number
-          last_month_revenue: number
+          this_month_revenue: number;
+          last_month_revenue: number;
         }[];
       };
       get_total_paid_orders: {
-        Args: Record<PropertyKey, never>
-        Returns: number
+        Args: Record<PropertyKey, never>;
+        Returns: number;
       };
       get_total_revenue: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
+        Args: Record<PropertyKey, never>;
+        Returns: number;
+      };
       is_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+        Args: Record<PropertyKey, never>;
+        Returns: boolean;
+      };
     };
     Enums: {
       [_ in never]: never;
@@ -798,106 +827,106 @@ type DefaultSchema = Database[Extract<keyof Database, "public">];
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-  | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-  | { schema: keyof Database },
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof Database },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof Database;
   }
-  ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-    Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-  : never = never,
+    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
   ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-    Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R;
     }
-  ? R
-  : never
+    ? R
+    : never
   : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-    DefaultSchema["Views"])
-  ? (DefaultSchema["Tables"] &
-    DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-      Row: infer R;
-    }
-  ? R
-  : never
-  : never;
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R;
+      }
+      ? R
+      : never
+    : never;
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-  | keyof DefaultSchema["Tables"]
-  | { schema: keyof Database },
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof Database },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof Database;
   }
-  ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-  : never = never,
+    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
   ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-    Insert: infer I;
-  }
-  ? I
-  : never
+      Insert: infer I;
+    }
+    ? I
+    : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-    Insert: infer I;
-  }
-  ? I
-  : never
-  : never;
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I;
+      }
+      ? I
+      : never
+    : never;
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-  | keyof DefaultSchema["Tables"]
-  | { schema: keyof Database },
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof Database },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof Database;
   }
-  ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-  : never = never,
+    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
   ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-    Update: infer U;
-  }
-  ? U
-  : never
+      Update: infer U;
+    }
+    ? U
+    : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-    Update: infer U;
-  }
-  ? U
-  : never
-  : never;
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U;
+      }
+      ? U
+      : never
+    : never;
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-  | keyof DefaultSchema["Enums"]
-  | { schema: keyof Database },
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof Database },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof Database;
   }
-  ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-  : never = never,
+    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
 > = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
   ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-  ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-  : never;
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never;
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-  | keyof DefaultSchema["CompositeTypes"]
-  | { schema: keyof Database },
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof Database },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof Database;
   }
-  ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-  : never = never,
+    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
 > = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
   ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-  ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-  : never;
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never;
 
 export const Constants = {
   graphql_public: {
