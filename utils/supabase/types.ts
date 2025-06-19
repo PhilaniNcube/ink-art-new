@@ -16,6 +16,18 @@ export type Provider = {
   title: string;
 };
 
+export type PrintProvider = {
+  id: number;
+  title: string;
+  location: {
+    address1: string;
+    city: string;
+    country: string;
+    region: string;
+    zip: string;
+  };
+};
+
 export type ProviderVariant = {
   id: number;
   title: string;

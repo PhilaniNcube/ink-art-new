@@ -28,6 +28,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Package, CheckCircle, XCircle, Loader2, Plus, X } from "lucide-react";
+import { ProviderVariant } from "@/utils/supabase/types";
 
 const initialState: CreateProductState = {
   success: false,
@@ -53,9 +54,13 @@ const PRINT_PROVIDERS = [
 
 interface PrintifyProductFormProps {
   className?: string;
+  variants: ProviderVariant[];
 }
 
-export function PrintifyProductForm({ className }: PrintifyProductFormProps) {
+export function PrintifyProductForm({
+  className,
+  variants,
+}: PrintifyProductFormProps) {
   const [imageId] = useQueryState("image_id");
   const [productId, setProductId] = useQueryState("product_id");
 
@@ -63,7 +68,6 @@ export function PrintifyProductForm({ className }: PrintifyProductFormProps) {
     createPrintifyProduct,
     initialState
   );
-
   // Form state
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -72,11 +76,27 @@ export function PrintifyProductForm({ className }: PrintifyProductFormProps) {
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState("");
 
-  // Variant state
-  const [variants, setVariants] = useState([
-    { id: 1, price: 29.99, is_enabled: true },
-  ]);
-
+  // Selected variants with pricing (initialize with first variant if available)
+  const [selectedVariants, setSelectedVariants] = useState<
+    Array<{
+      id: number;
+      price: number;
+      is_enabled: boolean;
+      title?: string;
+    }>
+  >(() => {
+    if (variants && variants.length > 0) {
+      return [
+        {
+          id: variants[0].id,
+          price: 29.99,
+          is_enabled: true,
+          title: variants[0].title,
+        },
+      ];
+    }
+    return [{ id: 1, price: 29.99, is_enabled: true }];
+  });
   // Handle successful product creation
   useEffect(() => {
     if (state.success && state.data && !isPending) {
@@ -87,9 +107,21 @@ export function PrintifyProductForm({ className }: PrintifyProductFormProps) {
       setBlueprintId(undefined);
       setPrintProviderId(undefined);
       setTags([]);
-      setVariants([{ id: 1, price: 29.99, is_enabled: true }]);
+      // Reset to first variant if available
+      if (variants && variants.length > 0) {
+        setSelectedVariants([
+          {
+            id: variants[0].id,
+            price: 29.99,
+            is_enabled: true,
+            title: variants[0].title,
+          },
+        ]);
+      } else {
+        setSelectedVariants([{ id: 1, price: 29.99, is_enabled: true }]);
+      }
     }
-  }, [state.success, state.data, isPending, setProductId]);
+  }, [state.success, state.data, isPending, setProductId, variants]);
 
   // Clear product_id after 10 seconds
   useEffect(() => {
@@ -111,15 +143,29 @@ export function PrintifyProductForm({ className }: PrintifyProductFormProps) {
   const handleRemoveTag = (tagToRemove: string) => {
     setTags(tags.filter((tag) => tag !== tagToRemove));
   };
-
   const handleAddVariant = () => {
-    const newId = Math.max(...variants.map((v) => v.id)) + 1;
-    setVariants([...variants, { id: newId, price: 29.99, is_enabled: true }]);
+    // Find available variants that aren't already selected
+    const availableVariants = variants.filter(
+      (v) => !selectedVariants.some((sv) => sv.id === v.id)
+    );
+
+    if (availableVariants.length > 0) {
+      const nextVariant = availableVariants[0];
+      setSelectedVariants([
+        ...selectedVariants,
+        {
+          id: nextVariant.id,
+          price: 29.99,
+          is_enabled: true,
+          title: nextVariant.title,
+        },
+      ]);
+    }
   };
 
   const handleRemoveVariant = (variantId: number) => {
-    if (variants.length > 1) {
-      setVariants(variants.filter((v) => v.id !== variantId));
+    if (selectedVariants.length > 1) {
+      setSelectedVariants(selectedVariants.filter((v) => v.id !== variantId));
     }
   };
 
@@ -128,8 +174,10 @@ export function PrintifyProductForm({ className }: PrintifyProductFormProps) {
     field: "price" | "is_enabled",
     value: number | boolean
   ) => {
-    setVariants(
-      variants.map((v) => (v.id === variantId ? { ...v, [field]: value } : v))
+    setSelectedVariants(
+      selectedVariants.map((v) =>
+        v.id === variantId ? { ...v, [field]: value } : v
+      )
     );
   };
 
@@ -142,22 +190,20 @@ export function PrintifyProductForm({ className }: PrintifyProductFormProps) {
     if (!blueprintId || !printProviderId) {
       alert("Please select both blueprint and print provider.");
       return;
-    }
-
-    // Prepare product data
+    } // Prepare product data
     const productData = {
       title,
       description: description || undefined,
       blueprint_id: blueprintId,
       print_provider_id: printProviderId,
-      variants: variants.map((v) => ({
+      variants: selectedVariants.map((v) => ({
         id: v.id,
         price: v.price,
         is_enabled: v.is_enabled,
       })),
       print_areas: [
         {
-          variant_ids: variants.map((v) => v.id),
+          variant_ids: selectedVariants.map((v) => v.id),
           placeholders: [
             {
               position: "front",
@@ -300,7 +346,6 @@ export function PrintifyProductForm({ className }: PrintifyProductFormProps) {
               )}
             </div>
           </div>
-
           {/* Product Configuration */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Product Configuration</h3>
@@ -362,85 +407,101 @@ export function PrintifyProductForm({ className }: PrintifyProductFormProps) {
                 )}
               </div>
             </div>
-          </div>
-
+          </div>{" "}
           {/* Variants */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Variants</h3>
+              <h3 className="text-lg font-semibold">Available Variants</h3>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={handleAddVariant}
-                disabled={isPending}
+                disabled={
+                  isPending ||
+                  variants.filter(
+                    (v) => !selectedVariants.some((sv) => sv.id === v.id)
+                  ).length === 0
+                }
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Add Variant
+                Add Variant (
+                {
+                  variants.filter(
+                    (v) => !selectedVariants.some((sv) => sv.id === v.id)
+                  ).length
+                }{" "}
+                available)
               </Button>
             </div>
-
             <div className="space-y-3">
-              {variants.map((variant, index) => (
-                <div
-                  key={variant.id}
-                  className="flex items-center gap-4 p-4 border rounded-lg"
-                >
-                  <div className="flex-1">
-                    <Label htmlFor={`variant-${variant.id}-price`}>
-                      Variant {variant.id} Price ($)
-                    </Label>
-                    <Input
-                      id={`variant-${variant.id}-price`}
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={variant.price}
-                      onChange={(e) =>
-                        handleVariantChange(
-                          variant.id,
-                          "price",
-                          parseFloat(e.target.value) || 0
-                        )
-                      }
-                      disabled={isPending}
-                    />
-                  </div>
+              {selectedVariants.map((selectedVariant, index) => {
+                // Find the original variant info from props
+                const variantInfo = variants.find(
+                  (v) => v.id === selectedVariant.id
+                );
+                return (
+                  <div
+                    key={selectedVariant.id}
+                    className="flex items-center gap-4 p-4 border rounded-lg"
+                  >
+                    <div className="flex-1">
+                      <Label htmlFor={`variant-${selectedVariant.id}-price`}>
+                        {variantInfo?.title || `Variant ${selectedVariant.id}`}{" "}
+                        - Price ($)
+                      </Label>
+                      <Input
+                        id={`variant-${selectedVariant.id}-price`}
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={selectedVariant.price}
+                        onChange={(e) =>
+                          handleVariantChange(
+                            selectedVariant.id,
+                            "price",
+                            parseFloat(e.target.value) || 0
+                          )
+                        }
+                        disabled={isPending}
+                      />
+                    </div>
 
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`variant-${variant.id}-enabled`}
-                      checked={variant.is_enabled}
-                      onCheckedChange={(checked) =>
-                        handleVariantChange(
-                          variant.id,
-                          "is_enabled",
-                          checked as boolean
-                        )
-                      }
-                      disabled={isPending}
-                    />
-                    <Label
-                      htmlFor={`variant-${variant.id}-enabled`}
-                      className="text-sm"
-                    >
-                      Enabled
-                    </Label>
-                  </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`variant-${selectedVariant.id}-enabled`}
+                        checked={selectedVariant.is_enabled}
+                        onCheckedChange={(checked) =>
+                          handleVariantChange(
+                            selectedVariant.id,
+                            "is_enabled",
+                            checked as boolean
+                          )
+                        }
+                        disabled={isPending}
+                      />
+                      <Label
+                        htmlFor={`variant-${selectedVariant.id}-enabled`}
+                        className="text-sm"
+                      >
+                        Enabled
+                      </Label>
+                    </div>
 
-                  {variants.length > 1 && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleRemoveVariant(variant.id)}
-                      disabled={isPending}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              ))}
+                    {selectedVariants.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleRemoveVariant(selectedVariant.id)}
+                        disabled={isPending}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
             {state.errors?.variants && (
               <p className="text-sm text-destructive">
@@ -448,7 +509,6 @@ export function PrintifyProductForm({ className }: PrintifyProductFormProps) {
               </p>
             )}
           </div>
-
           {/* Submit Button */}
           <Button
             type="submit"
@@ -467,7 +527,6 @@ export function PrintifyProductForm({ className }: PrintifyProductFormProps) {
               </>
             )}
           </Button>
-
           {/* Error Messages */}
           {state.errors?._form && (
             <Alert variant="destructive">
@@ -475,7 +534,6 @@ export function PrintifyProductForm({ className }: PrintifyProductFormProps) {
               <AlertDescription>{state.errors._form[0]}</AlertDescription>
             </Alert>
           )}
-
           {/* Success Message */}
           {productId && (
             <Alert variant="default">
@@ -485,7 +543,6 @@ export function PrintifyProductForm({ className }: PrintifyProductFormProps) {
               </AlertDescription>
             </Alert>
           )}
-
           {state.message && !state.errors?._form && !productId && (
             <Alert variant={state.success ? "default" : "destructive"}>
               {state.success ? (

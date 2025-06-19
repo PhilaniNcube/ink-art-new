@@ -1,4 +1,4 @@
-import { PrintifyBlueprint } from "../supabase/types";
+import { PrintifyBlueprint, ProviderVariant } from "../supabase/types";
 
 // the blueprinnt id for stretched canvas is 555
 
@@ -73,7 +73,7 @@ export async function fetchBlueprintProviders(
 export async function fetchProviderVariants(
   blueprintId: number,
   providerId: number
-): Promise<any[]> {
+): Promise<ProviderVariant[]> {
   const response = await fetch(
     `https://api.printify.com/v1/catalog/blueprints/${blueprintId}/print_providers/${providerId}/variants.json`,
     {
@@ -86,6 +86,54 @@ export async function fetchProviderVariants(
   if (!response.ok) {
     console.error(
       "Error fetching Printify provider variants:",
+      response.statusText
+    );
+    return [];
+  }
+
+  const data = await response.json();
+  return data.variants || [];
+}
+
+// get a list of all print providers
+export async function fetchPrintProviders(): Promise<any[]> {
+  const response = await fetch(
+    `https://api.printify.com/v1/catalog/print_providers.json`,
+    {
+      headers: {
+        Authorization: `Bearer ${apiToken}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    console.error(
+      "Error fetching Printify print providers:",
+      response.statusText
+    );
+    return [];
+  }
+
+  const data = await response.json();
+  return data;
+}
+
+// get a list of all print providers' products
+export async function fetchPrintProvidersProducts(
+  providerId: number
+): Promise<any[]> {
+  const response = await fetch(
+    `https://api.printify.com/v1/catalog/print_providers/${providerId}.json`,
+    {
+      headers: {
+        Authorization: `Bearer ${apiToken}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    console.error(
+      "Error fetching Printify print providers products:",
       response.statusText
     );
     return [];
