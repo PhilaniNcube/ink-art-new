@@ -4,14 +4,15 @@ import configPromise from "@payload-config";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const payload = await getPayload({ config: configPromise });
 
     const blog = await payload.findByID({
       collection: "blog",
-      id: params.id,
+      id: id,
     });
 
     if (!blog) {
