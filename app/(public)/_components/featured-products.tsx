@@ -29,8 +29,6 @@ const FeaturedProducts = async () => {
             image.variant_ids?.includes(firstVariant.id)
           );
 
-          console.log("Product images:", product, index);
-
           return (
             <Link
               href={`/products/${product.id}`}
