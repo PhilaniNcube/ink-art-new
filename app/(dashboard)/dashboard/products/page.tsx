@@ -2,10 +2,10 @@ import {
   fetchAllProducts,
   fetchPrintifyProducts,
 } from "@/utils/queries/products";
-import { getAllCategories } from "@/utils/actions/categories";
 import React from "react";
 import ProductsTable from "./_components/products-table";
 import Link from "next/link";
+import { getAllCategories } from "@/utils/queries/categories";
 
 // Force dynamic rendering since we're using cookies via Supabase
 export const dynamic = "force-dynamic";

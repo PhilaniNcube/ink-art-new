@@ -19,7 +19,7 @@ import {
 } from "@/utils/queries/products";
 import ProductsTable from "./products/_components/products-table";
 import { OrdersContent } from "./_components/orders-content";
-import { getAllCategories } from "@/utils/actions/categories";
+import { getAllCategories } from "@/utils/queries/categories";
 
 const DashboardHome = async () => {
   const revenueData = fetchOrdersAnalytics();

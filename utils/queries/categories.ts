@@ -58,3 +58,73 @@ export async function fetchCategoryBySlug(slug: string) {
 
   return { category, products: sortedProducts };
 }
+
+// UTILITY FUNCTIONS FOR QUERYING
+
+// Get all categories
+export async function getAllCategories() {
+  try {
+    const supabase = await createClient();
+
+    const { data: categories, error } = await supabase
+      .from("categories")
+      .select("*")
+      .order("title", { ascending: true });
+
+    if (error) {
+      console.error("Error fetching categories:", error);
+      return [];
+    }
+
+    return categories || [];
+  } catch (error) {
+    console.error("Error in getAllCategories:", error);
+    return [];
+  }
+}
+
+// Get category by ID
+export async function getCategoryById(id: string) {
+  try {
+    const supabase = await createClient();
+
+    const { data: category, error } = await supabase
+      .from("categories")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error("Error fetching category:", error);
+      return null;
+    }
+
+    return category;
+  } catch (error) {
+    console.error("Error in getCategoryById:", error);
+    return null;
+  }
+}
+
+// Get category by slug
+export async function getCategoryBySlug(slug: string) {
+  try {
+    const supabase = await createClient();
+
+    const { data: category, error } = await supabase
+      .from("categories")
+      .select("*")
+      .eq("slug", slug)
+      .single();
+
+    if (error) {
+      console.error("Error fetching category:", error);
+      return null;
+    }
+
+    return category;
+  } catch (error) {
+    console.error("Error in getCategoryBySlug:", error);
+    return null;
+  }
+}

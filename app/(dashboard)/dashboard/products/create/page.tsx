@@ -35,12 +35,12 @@ const CreatePrintifyProducts = async () => {
   return (
     <div>
       CreatePrintifyProducts
-      <div className="flex gap-x-6">
-        <PrintifyImageUpload />
-        <Suspense fallback={<div>Loading form...</div>}>
+      <Suspense fallback={<div>Loading...</div>}>
+        <div className="flex gap-x-6">
+          <PrintifyImageUpload />
           <PrintifyProductForm variants={variants} className="w-full flex-1" />
-        </Suspense>
-      </div>
+        </div>
+      </Suspense>
     </div>
   );
 };
