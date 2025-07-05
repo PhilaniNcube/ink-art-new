@@ -183,7 +183,11 @@ export const createColumns = (
         return <PublishButton productId={product.id} />;
       }
 
-      return null;
+      return (
+        <Badge variant="outline" className="text-md text-muted-foreground">
+          Published
+        </Badge>
+      );
     },
   }),
 
