@@ -39,12 +39,12 @@ const ProductDetails = async ({ product_id }: { product_id: string }) => {
         <div className="col-span-1 lg:col-span-2 border p-2">
           <ProductImages images={product.images} />
         </div>
-        <div className="col-span-1">
+        <div className="col-span-1 oveflow-x-hidden">
           <ProductDescription product={product} />
           <h2 className="text-2xl md:text-3xl mt-4">Description</h2>
           {/* dangerously set innerHtml using the product.description */}
           <div
-            className="mt-4 text-xs"
+            className="mt-4 text-xs max-w-[500px] overflow-hidden"
             dangerouslySetInnerHTML={{ __html: product.description }}
           />
         </div>
