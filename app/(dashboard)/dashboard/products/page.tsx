@@ -7,6 +7,9 @@ import React from "react";
 import ProductsTable from "./_components/products-table";
 import Link from "next/link";
 
+// Force dynamic rendering since we're using cookies via Supabase
+export const dynamic = "force-dynamic";
+
 const DashboardProducts = async () => {
   // Fetch products and categories from your API or database here
   const [products, categories, printifyProducts] = await Promise.all([

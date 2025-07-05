@@ -8,6 +8,7 @@ import {
   fetchPrintProvidersProducts,
   fetchProviderVariants,
 } from "@/utils/queries/printify";
+import { Suspense } from "react";
 
 const CreatePrintifyProducts = async () => {
   // Fetch Printify blueprints
@@ -36,9 +37,10 @@ const CreatePrintifyProducts = async () => {
       CreatePrintifyProducts
       <div className="flex gap-x-6">
         <PrintifyImageUpload />
-        <PrintifyProductForm variants={variants} className="w-full flex-1" />
+        <Suspense fallback={<div>Loading form...</div>}>
+          <PrintifyProductForm variants={variants} className="w-full flex-1" />
+        </Suspense>
       </div>
-      <pre className="max-w-3xl">{JSON.stringify(variants, null, 2)}</pre>
     </div>
   );
 };
