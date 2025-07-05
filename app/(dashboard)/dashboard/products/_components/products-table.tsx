@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Database } from "@/utils/supabase/types";
+import { Database, PrintifyProduct } from "@/utils/supabase/types";
 import { columns, createColumns } from "./columns"; // Import the defined columns
 import { ProductCategoriesDisplay } from "@/components/products/product-categories-display";
 import { useRouter } from "next/navigation";
@@ -55,9 +55,14 @@ interface Category {
 interface ProductsTableProps {
   products: Product[];
   categories: Category[];
+  printifyProducts: PrintifyProduct[];
 }
 
-const ProductsTable = ({ products, categories }: ProductsTableProps) => {
+const ProductsTable = ({
+  products,
+  categories,
+  printifyProducts,
+}: ProductsTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -83,12 +88,10 @@ const ProductsTable = ({ products, categories }: ProductsTableProps) => {
     setPageSize(nextState.pageSize.toString());
   };
 
-  const router = useRouter();
-
-  // Create columns with categories
+  // Create columns with categories and printify products
   const columnsWithCategories = React.useMemo(() => {
-    return createColumns(categories);
-  }, [categories]);
+    return createColumns(categories, printifyProducts);
+  }, [categories, printifyProducts]);
 
   // Create columns with callback
   const columnsWithCallbacks = React.useMemo(() => {

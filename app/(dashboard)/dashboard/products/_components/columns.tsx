@@ -1,25 +1,17 @@
 "use client";
 
-import { Database } from "@/utils/supabase/types";
+import { Database, PrintifyProduct } from "@/utils/supabase/types";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { cn, formatCurrency } from "@/lib/utils";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Delete, EllipsisIcon, Pencil, TrashIcon } from "lucide-react";
+import { Pencil, TrashIcon } from "lucide-react";
 import Link from "next/link";
-import { deleteProduct } from "@/utils/actions/products";
-import { startTransition } from "react";
 import { DeleteProductDialog } from "./delete-product-dialog";
-import UnlockProduct from "./unlock-product";
 import { ProductCategoriesDisplay } from "@/components/products/product-categories-display";
+import PublishButton from "./publish-button";
 // Import other necessary components like Button, DropdownMenu for actions if needed
 
 type Product = Database["public"]["Tables"]["products"]["Row"];
@@ -32,7 +24,10 @@ interface Category {
 
 const columnHelper = createColumnHelper<Product>();
 
-export const createColumns = (categories: Category[]) => [
+export const createColumns = (
+  categories: Category[],
+  printifyProducts: PrintifyProduct[]
+) => [
   // Selection Column (Optional)
   columnHelper.display({
     id: "select",
@@ -171,6 +166,27 @@ export const createColumns = (categories: Category[]) => [
     },
   }),
 
+  // Publish Column
+  columnHelper.display({
+    id: "publish",
+    header: "Publish",
+    cell: ({ row }) => {
+      const product = row.original;
+
+      // Find the corresponding printify product
+      const printifyProduct = Array.isArray(printifyProducts)
+        ? printifyProducts.find((p) => p.id === product.id)
+        : undefined;
+
+      // Only show publish button if printify product exists and is locked
+      if (printifyProduct && printifyProduct.is_locked) {
+        return <PublishButton productId={product.id} />;
+      }
+
+      return null;
+    },
+  }),
+
   // Actions Column (Example)
   columnHelper.display({
     id: "actions",
@@ -198,5 +214,5 @@ export const createColumns = (categories: Category[]) => [
   }),
 ];
 
-// For backward compatibility, export default columns with empty categories
-export const columns = createColumns([]);
+// For backward compatibility, export default columns with empty categories and printify products
+export const columns = createColumns([], []);

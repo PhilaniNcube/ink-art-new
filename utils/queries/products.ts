@@ -146,3 +146,43 @@ export async function fetchPrintifyProductById(productId: string) {
 
   return data as PrintifyProduct;
 }
+
+export async function fetchPrintifyProducts() {
+  try {
+    const apiToken = process.env.PRINTIFY_WEBHOOKS_TOKEN;
+    const shopId = process.env.PRINTIFY_SHOP_ID || "9354978";
+
+    if (!apiToken) {
+      console.error("Printify API token is not configured");
+      return [];
+    }
+
+    const res = await fetch(
+      `https://api.printify.com/v1/shops/${shopId}/products.json`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${apiToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!res.ok) {
+      console.error("Error fetching products from Printify:", res.statusText);
+      return [];
+    }
+
+    const data = await res.json();
+
+    if (!Array.isArray(data.data)) {
+      console.error("Unexpected response format from Printify:", data);
+      return [];
+    }
+
+    return data.data as PrintifyProduct[];
+  } catch (error) {
+    console.error("Error fetching Printify products:", error);
+    return [];
+  }
+}

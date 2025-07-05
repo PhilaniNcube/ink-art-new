@@ -13,20 +13,31 @@ import {
 } from "@/components/ui/card";
 import { StatsCards } from "./_components/stats-cards";
 import { RecentSales } from "./_components/recent-sales";
-import { fetchAllProducts } from "@/utils/queries/products";
+import {
+  fetchAllProducts,
+  fetchPrintifyProducts,
+} from "@/utils/queries/products";
 import ProductsTable from "./products/_components/products-table";
 import { OrdersContent } from "./_components/orders-content";
+import { getAllCategories } from "@/utils/actions/categories";
 
 const DashboardHome = async () => {
   const revenueData = fetchOrdersAnalytics();
   const allOrdersData = fetchAllOrders();
   const productsData = fetchAllProducts();
+  const categoriesData = getAllCategories();
 
-  const [totalRevenue, products, orders] = await Promise.all([
-    revenueData,
-    productsData,
-    allOrdersData,
-  ]);
+  // fetch all printify products
+  const printifyProductsData = fetchPrintifyProducts();
+
+  const [totalRevenue, products, orders, categories, printifyProducts] =
+    await Promise.all([
+      revenueData,
+      productsData,
+      allOrdersData,
+      categoriesData,
+      printifyProductsData,
+    ]);
 
   return (
     <main>
@@ -102,7 +113,11 @@ const DashboardHome = async () => {
             <h2 className="text-2xl font-bold tracking-tight">Products</h2>
             <RefreshProductsButton />
           </div>
-          <ProductsTable products={products!} />
+          <ProductsTable
+            categories={categories}
+            products={products!}
+            printifyProducts={printifyProducts}
+          />
         </TabsContent>
         <TabsContent value="orders" className="space-y-4">
           <Card>

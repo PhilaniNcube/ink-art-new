@@ -1,4 +1,7 @@
-import { fetchAllProducts } from "@/utils/queries/products";
+import {
+  fetchAllProducts,
+  fetchPrintifyProducts,
+} from "@/utils/queries/products";
 import { getAllCategories } from "@/utils/actions/categories";
 import React from "react";
 import ProductsTable from "./_components/products-table";
@@ -6,14 +9,17 @@ import Link from "next/link";
 
 const DashboardProducts = async () => {
   // Fetch products and categories from your API or database here
-  const [products, categories] = await Promise.all([
+  const [products, categories, printifyProducts] = await Promise.all([
     fetchAllProducts(),
     getAllCategories(),
+    fetchPrintifyProducts(),
   ]);
 
   if (!products) {
     return <div>Error fetching products</div>;
   }
+
+  console.log("Products:", printifyProducts);
 
   return (
     <div>
@@ -28,7 +34,11 @@ const DashboardProducts = async () => {
         </Link>
       </div>
       <div className="mt-4">
-        <ProductsTable products={products} categories={categories} />
+        <ProductsTable
+          categories={categories}
+          products={products!}
+          printifyProducts={printifyProducts}
+        />
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Database } from "@/utils/supabase/types";
+import { Database, PrintifyProduct } from "@/utils/supabase/types";
 import { ArrowLeft, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import React from "react";
@@ -18,11 +18,13 @@ import FeaturedButton from "./featured-button";
 
 const ProductHeader = ({
   product,
+  printifyProduct,
 }: {
   product: Database["public"]["Tables"]["products"]["Row"];
+  printifyProduct: PrintifyProduct | null;
 }) => {
-  console.log("Visible", product.visible);
-  console.log("Locked", product.is_locked);
+  console.log("Visible", printifyProduct?.visible);
+  console.log("Locked", printifyProduct?.is_locked);
 
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-6">
@@ -64,7 +66,9 @@ const ProductHeader = ({
           isFeatured={product.featured || false}
         />
         <Button variant="outline">Preview</Button>
-        <PublishButton productId={product.id} />
+        {printifyProduct?.is_locked ? (
+          <PublishButton productId={product.id} />
+        ) : null}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
