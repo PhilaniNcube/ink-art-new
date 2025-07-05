@@ -19,14 +19,20 @@ import { deleteProduct } from "@/utils/actions/products";
 import { startTransition } from "react";
 import { DeleteProductDialog } from "./delete-product-dialog";
 import UnlockProduct from "./unlock-product";
-import { ProductCategoryDisplay } from "@/components/products/product-category-display";
+import { ProductCategoriesDisplay } from "@/components/products/product-categories-display";
 // Import other necessary components like Button, DropdownMenu for actions if needed
 
 type Product = Database["public"]["Tables"]["products"]["Row"];
 
+interface Category {
+  id: string;
+  title: string;
+  slug: string;
+}
+
 const columnHelper = createColumnHelper<Product>();
 
-export const columns = [
+export const createColumns = (categories: Category[]) => [
   // Selection Column (Optional)
   columnHelper.display({
     id: "select",
@@ -108,29 +114,26 @@ export const columns = [
     },
   }),
 
-  // Category Column
-  columnHelper.accessor("category", {
-    header: "Category",
+  // Categories Column
+  columnHelper.display({
+    id: "categories",
+    header: "Categories",
     cell: ({ row }) => {
-      const product = row.original;
+      const product = row.original as any; // Type assertion to access extended properties
+
+      // Extract category IDs from the product_categories relation
+      const categoryIds = product.product_categories
+        ? product.product_categories.map((pc: any) => pc.category_id)
+        : [];
+
       return (
-        <ProductCategoryDisplay
+        <ProductCategoriesDisplay
           productId={product.id}
-          categoryId={product.category}
-          categoryTitle={
-            product.category && (product as any).category?.title
-              ? (product as any).category.title
-              : null
-          }
-          onCategoryUpdated={(productId, newCategoryId, newCategoryTitle) => {
+          currentCategories={categoryIds}
+          availableCategories={categories}
+          onCategoriesUpdated={(productId, newCategories) => {
             // The table will refresh automatically due to revalidatePath in the server action
-            // You could also trigger a manual refresh here if needed
-            console.log(
-              "Category updated:",
-              productId,
-              newCategoryId,
-              newCategoryTitle
-            );
+            console.log("Categories updated:", productId, newCategories);
           }}
         />
       );
@@ -194,3 +197,6 @@ export const columns = [
     },
   }),
 ];
+
+// For backward compatibility, export default columns with empty categories
+export const columns = createColumns([]);

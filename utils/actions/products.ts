@@ -347,3 +347,66 @@ export async function toggleProductFeatured(productId: string) {
     };
   }
 }
+
+export async function updateProductCategories(
+  prevState: { success: boolean; message: string },
+  formData: FormData
+) {
+  try {
+    const productId = formData.get("productId") as string;
+    const categoriesJson = formData.get("categories") as string;
+    const searchParams = formData.get("searchParams") as string;
+
+    if (!productId) {
+      return { success: false, message: "Product ID is required" };
+    }
+
+    const supabase = await createClient();
+
+    // Parse categories array
+    let categories: string[] = [];
+    try {
+      categories = JSON.parse(categoriesJson || "[]");
+    } catch (error) {
+      console.error("Error parsing categories:", error);
+      return { success: false, message: "Invalid categories format" };
+    }
+
+    // First, delete existing category associations
+    const { error: deleteError } = await supabase
+      .from("product_categories")
+      .delete()
+      .eq("product_id", productId);
+
+    if (deleteError) {
+      console.error("Error deleting existing categories:", deleteError);
+      return { success: false, message: "Failed to update categories" };
+    }
+
+    // Insert new category associations
+    if (categories.length > 0) {
+      const categoryInserts = categories.map((categoryId) => ({
+        product_id: productId,
+        category_id: categoryId,
+      }));
+
+      const { error: insertError } = await supabase
+        .from("product_categories")
+        .insert(categoryInserts);
+
+      if (insertError) {
+        console.error("Error inserting new categories:", insertError);
+        return { success: false, message: "Failed to update categories" };
+      }
+    }
+
+    // Don't revalidate the page to avoid resetting pagination
+    // The client component will handle optimistic updates
+    // revalidatePath("/dashboard/products", "page");
+
+    return { success: true, message: "Categories updated successfully" };
+  } catch (error) {
+    console.error("Error updating product categories:", error);
+    return { success: false, message: "An unexpected error occurred" };
+  }
+}

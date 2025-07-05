@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { Database } from "@/utils/supabase/types";
-import { columns } from "./columns"; // Import the defined columns
-import { ProductCategoryDisplay } from "@/components/products/product-category-display";
+import { columns, createColumns } from "./columns"; // Import the defined columns
+import { ProductCategoriesDisplay } from "@/components/products/product-categories-display";
 import { useRouter } from "next/navigation";
 import {
   ColumnDef,
@@ -46,59 +46,53 @@ import {
 
 type Product = Database["public"]["Tables"]["products"]["Row"];
 
-interface ProductsTableProps {
-  products: Product[];
+interface Category {
+  id: string;
+  title: string;
+  slug: string;
 }
 
-const ProductsTable = ({ products }: ProductsTableProps) => {
+interface ProductsTableProps {
+  products: Product[];
+  categories: Category[];
+}
+
+const ProductsTable = ({ products, categories }: ProductsTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 
-  // URL state for pagination with nuqs
+  // URL state for pagination with nuqs (1-based for user URLs)
   const [pageIndex, setPageIndex] = useQueryState("page", {
-    defaultValue: "0",
+    defaultValue: "1",
   });
   const [pageSize, setPageSize] = useQueryState("size", { defaultValue: "10" });
 
-  // Create pagination state for the table
+  // Create pagination state for the table (0-based for internal use)
   const pagination = {
-    pageIndex: parseInt(pageIndex),
+    pageIndex: parseInt(pageIndex) - 1, // Convert from 1-based URL to 0-based table
     pageSize: parseInt(pageSize),
   };
 
-  // Handle pagination state changes
+  // Handle pagination state changes (convert back to 1-based for URL)
   const setPagination = (updater: any) => {
     const nextState =
       typeof updater === "function" ? updater(pagination) : updater;
-    setPageIndex(nextState.pageIndex.toString());
+    setPageIndex((nextState.pageIndex + 1).toString()); // Convert from 0-based table to 1-based URL
     setPageSize(nextState.pageSize.toString());
   };
 
   const router = useRouter();
-  // Handle category update callback
-  const handleCategoryUpdated = useCallback(
-    (
-      productId: string,
-      newCategoryId: string | null,
-      newCategoryTitle: string | null
-    ) => {
-      console.log(
-        "Category updated:",
-        productId,
-        newCategoryId,
-        newCategoryTitle
-      );
-      // The server action already handles revalidatePath, but we can trigger a manual refresh if needed
-      router.refresh();
-    },
-    [router]
-  );
+
+  // Create columns with categories
+  const columnsWithCategories = React.useMemo(() => {
+    return createColumns(categories);
+  }, [categories]);
 
   // Create columns with callback
   const columnsWithCallbacks = React.useMemo(() => {
-    return columns.map((column) => {
+    return columnsWithCategories.map((column) => {
       if (
         column.id === "category" ||
         (column as any).accessorKey === "category"
@@ -106,17 +100,22 @@ const ProductsTable = ({ products }: ProductsTableProps) => {
         return {
           ...column,
           cell: ({ row }: any) => {
-            const product = row.original;
+            const product = row.original as any; // Type assertion to access extended properties
+
+            // Extract category IDs from the product_categories relation
+            const categoryIds = product.product_categories
+              ? product.product_categories.map((pc: any) => pc.category_id)
+              : [];
+
             return (
-              <ProductCategoryDisplay
+              <ProductCategoriesDisplay
                 productId={product.id}
-                categoryId={product.category}
-                categoryTitle={
-                  product.category && (product as any).category?.title
-                    ? (product as any).category.title
-                    : null
-                }
-                onCategoryUpdated={handleCategoryUpdated}
+                currentCategories={categoryIds}
+                availableCategories={categories}
+                onCategoriesUpdated={(productId, newCategories) => {
+                  console.log("Categories updated:", productId, newCategories);
+                  // The optimistic update is handled by the component itself
+                }}
               />
             );
           },
@@ -124,7 +123,7 @@ const ProductsTable = ({ products }: ProductsTableProps) => {
       }
       return column;
     });
-  }, [handleCategoryUpdated]);
+  }, [categories]);
 
   const table = useReactTable({
     data: products ?? [],
@@ -234,7 +233,7 @@ const ProductsTable = ({ products }: ProductsTableProps) => {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={columnsWithCategories.length}
                   className="h-24 text-center"
                 >
                   No results.

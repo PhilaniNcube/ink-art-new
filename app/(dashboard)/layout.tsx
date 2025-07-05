@@ -1,8 +1,11 @@
-import React, { ReactNode } from 'react'
-import Link from 'next/link';
-import { NuqsAdapter } from 'nuqs/adapters/next/app'
+import React, { ReactNode } from "react";
+import Link from "next/link";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import {
   Bell,
+  BoxesIcon,
+  BoxIcon,
+  BoxSelect,
   CircleUser,
   Home,
   LineChart,
@@ -12,10 +15,10 @@ import {
   Search,
   ShoppingCart,
   Users,
-} from "lucide-react"
+} from "lucide-react";
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 import {
   DropdownMenu,
@@ -24,11 +27,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
-const DashboardLayout = ({children}:{children:ReactNode}) => {
+const DashboardLayout = ({ children }: { children: ReactNode }) => {
   return (
     <NuqsAdapter>
       <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
@@ -54,33 +57,36 @@ const DashboardLayout = ({children}:{children:ReactNode}) => {
                   Dashboard
                 </Link>
                 <Link
-                  href="/dashboard/orders" // Replace with actual orders link
+                  href="/dashboard/orders"
                   className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
                 >
                   <ShoppingCart className="h-4 w-4" />
                   Orders
-                  
                 </Link>
                 <Link
-                  href="/dashboard/products" // Example link to printify page
+                  href="/dashboard/products"
                   className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
                 >
                   <Package className="h-4 w-4" />
                   Products{" "}
                 </Link>
                 <Link
-                  href="/dashboard/customers" // Replace with actual customers link
+                  href="/dashboard/categories"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                >
+                  <BoxesIcon className="h-4 w-4" />
+                  Categories{" "}
+                </Link>
+                <Link
+                  href="/dashboard/customers"
                   className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
                 >
                   <Users className="h-4 w-4" />
                   Customers
                 </Link>
-                
               </nav>
             </div>
-            <div className="mt-auto p-4">
-             
-            </div>
+            <div className="mt-auto p-4"></div>
           </div>
         </div>
         <div className="flex flex-col">
@@ -118,7 +124,6 @@ const DashboardLayout = ({children}:{children:ReactNode}) => {
                   >
                     <ShoppingCart className="h-5 w-5" />
                     Orders
-                   
                   </Link>
                   <Link
                     href="/dashboard/products" // Example link to printify page
@@ -134,11 +139,8 @@ const DashboardLayout = ({children}:{children:ReactNode}) => {
                     <Users className="h-5 w-5" />
                     Customers
                   </Link>
-                  
                 </nav>
-                <div className="mt-auto">
-                 
-                </div>
+                <div className="mt-auto"></div>
               </SheetContent>
             </Sheet>
             <div className="w-full flex-1">
@@ -155,7 +157,11 @@ const DashboardLayout = ({children}:{children:ReactNode}) => {
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="secondary" size="icon" className="rounded-full">
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="rounded-full"
+                >
                   <CircleUser className="h-5 w-5" />
                   <span className="sr-only">Toggle user menu</span>
                 </Button>
@@ -177,7 +183,7 @@ const DashboardLayout = ({children}:{children:ReactNode}) => {
         </div>
       </div>
     </NuqsAdapter>
-  )
-}
+  );
+};
 
-export default DashboardLayout
+export default DashboardLayout;

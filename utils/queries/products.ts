@@ -10,7 +10,16 @@ export async function fetchPaginatedProducts(page: number, limit: number) {
 
   const { data, error } = await supabase
     .from("products")
-    .select("*, category(*)")
+    .select(
+      `
+      *,
+      category(*),
+      product_categories(
+        category_id,
+        categories(id, title, slug)
+      )
+    `
+    )
     .range(start, end)
     .order("title", { ascending: true });
 
@@ -27,7 +36,16 @@ export async function fetchAllProducts() {
 
   const { data, error } = await supabase
     .from("products")
-    .select("*, category(*)")
+    .select(
+      `
+      *,
+      category(*),
+      product_categories(
+        category_id,
+        categories(id, title, slug)
+      )
+    `
+    )
     .order("title", { ascending: true });
 
   if (error) {
@@ -43,7 +61,16 @@ export async function featchFeaturedProducts() {
 
   const { data, error } = await supabase
     .from("products")
-    .select("*, category(*)")
+    .select(
+      `
+      *,
+      category(*),
+      product_categories(
+        category_id,
+        categories(id, title, slug)
+      )
+    `
+    )
     .eq("featured", true)
     .order("title", { ascending: true });
 
