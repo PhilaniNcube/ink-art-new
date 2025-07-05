@@ -25,12 +25,14 @@ export async function generateMetadata({
     };
   }
 
-  const imageUrl = post.image?.url
-    ? `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL}${post.image.url}`
-    : undefined;
+  const baseUrl = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : process.env.NEXT_PUBLIC_SITE_URL || "https://inkart.store";
+
+  const imageUrl = post.image?.url ? `${baseUrl}${post.image.url}` : undefined;
 
   return {
-    metadataBase: process.env.VERCEL_URL,
+    metadataBase: new URL(baseUrl),
     generator: "Next.js",
     title: post.title,
     description: post.excerpt,
@@ -49,7 +51,7 @@ export async function generateMetadata({
     openGraph: {
       title: post.title,
       description: post.excerpt,
-      url: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL}/blog/${post.id}`,
+      url: `${baseUrl}/blog/${post.id}`,
       type: "article",
       publishedTime: post.publishedDate,
       images: imageUrl

@@ -8,7 +8,9 @@ import { fetchCategories } from "@/utils/queries/categories";
 import { fetchFeaturedProducts } from "@/utils/queries/products";
 import MobileNavigation from "./_components/mobile-navigation";
 
-const defaultUrl = process.env.VERCEL_URL || "https://inkart.store";
+const defaultUrl = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : process.env.NEXT_PUBLIC_SITE_URL || "https://inkart.store";
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
