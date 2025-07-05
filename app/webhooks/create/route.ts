@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   // Basic check if token is available (masking for safety)
-  console.log("Received starting");
+
   const apiToken = process.env.PRINTIFY_WEBHOOKS_TOKEN;
   if (!apiToken) {
     console.error("PRINTIFY_API_TOKEN environment variable not set.");
@@ -12,15 +12,11 @@ export async function GET(request: Request) {
       { status: 500 }
     );
   }
-  // console.log('Using Printify token starting with:', apiToken.substring(0, 4)); // Log prefix if helpful for debugging setup
 
   const shopId = process.env.PRINTIFY_SHOP_ID || "9354978"; // Your specific shop ID
   const webhookUrl = "https://ink-art-new.vercel.app/webhooks/products/new";
   const topic = "product:publish:update";
   const createWebhookEndpoint = `https://api.printify.com/v1/shops/${shopId}/webhooks.json`;
-
-  console.log(`Attempting to create webhook: POST ${createWebhookEndpoint}`);
-  console.log(`Webhook URL: ${webhookUrl}, Topic: ${topic}`);
 
   try {
     const res = await fetch(createWebhookEndpoint, {
@@ -52,8 +48,6 @@ export async function GET(request: Request) {
     }
 
     const data = await res.json();
-
-    console.log("Successfully created webhook:", data);
 
     // send back the 200 response code
     return NextResponse.json(data, { status: 200 });

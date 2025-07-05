@@ -107,8 +107,6 @@ export async function GET(request: Request) {
       cache: "no-store", // Ensure we get fresh data
     });
 
-    console.log("Printify API response status:", response.status);
-
     if (!response.ok) {
       const errorData = await response.json().catch(() => null);
       return NextResponse.json(

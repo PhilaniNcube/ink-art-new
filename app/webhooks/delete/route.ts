@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   // Basic check if token is available (masking for safety)
-  console.log("Received starting");
 
   const apiToken = process.env.PRINTIFY_WEBHOOKS_TOKEN;
   if (!apiToken) {
@@ -13,15 +12,11 @@ export async function GET(request: Request) {
       { status: 500 }
     );
   }
-  // console.log('Using Printify token starting with:', apiToken.substring(0, 4)); // Log prefix if helpful for debugging setup
 
   const shopId = process.env.PRINTIFY_SHOP_ID || "9354978"; // Your specific shop ID
   // const webhookUrl = 'https://ink-art-new.vercel.app/webhooks/products/update';
   // const topic = 'product:publish:started';
   const deleteWebhooksEndpoint = `https://api.printify.com/v1/shops/${shopId}/webhooks/6809478c7a1fc799d60ce017.json`;
-
-  console.log(`Attempting to get webhooks: GET ${deleteWebhooksEndpoint}`);
-  // console.log(`Webhook URL: ${webhookUrl}, Topic: ${topic}`);
 
   try {
     const res = await fetch(deleteWebhooksEndpoint, {
@@ -49,8 +44,6 @@ export async function GET(request: Request) {
     }
 
     const data = await res.json();
-
-    console.log("Successfully getd webhook:", data);
 
     // send back the 200 response code
     return NextResponse.json(data, { status: 200 });

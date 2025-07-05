@@ -36,8 +36,6 @@ const CategoryDetails = async ({ slug }: { slug: string }) => {
         {products.map((product) => {
           const lowestPriceVariant = getLowestPriceVariant(product.variants);
 
-          console.log(product.variants);
-
           return (
             <Link
               href={`/products/${product.id}`}

@@ -1,23 +1,20 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Order, OrdersTable } from "./orders-table"
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Order, OrdersTable } from "./orders-table";
 
-
-
-
-
-export function OrdersContent({data}: { data: Order[] }) {
-
-    console.log("OrdersContent", data)
-
-  const [orders, setOrders] = useState<Order[]>(data)
-  const [loading, setLoading] = useState(true)
-
-
+export function OrdersContent({ data }: { data: Order[] }) {
+  const [orders, setOrders] = useState<Order[]>(data);
+  const [loading, setLoading] = useState(true);
 
   return (
     <Card>
@@ -31,11 +28,10 @@ export function OrdersContent({data}: { data: Order[] }) {
             <TabsTrigger value="all">All Orders</TabsTrigger>
             <TabsTrigger value="pending">Pending</TabsTrigger>
             <TabsTrigger value="paid">Paid</TabsTrigger>
-   
           </TabsList>
 
           <TabsContent value="all" className="space-y-4">
-          <OrdersTable data={orders} />
+            <OrdersTable data={orders} />
           </TabsContent>
 
           <TabsContent value="pending" className="space-y-4">
@@ -43,14 +39,12 @@ export function OrdersContent({data}: { data: Order[] }) {
           </TabsContent>
 
           <TabsContent value="paid" className="space-y-4">
-          <OrdersTable data={orders.filter((order) => order.paid)} />
+            <OrdersTable data={orders.filter((order) => order.paid)} />
           </TabsContent>
-
-  
         </Tabs>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 function OrdersTableSkeleton() {
@@ -85,5 +79,5 @@ function OrdersTableSkeleton() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,9 +1,16 @@
-'use client';
+"use client";
 
 import { useState } from "react";
-import { PayPalScriptProvider, PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
+import {
+  PayPalScriptProvider,
+  PayPalButtons,
+  usePayPalScriptReducer,
+} from "@paypal/react-paypal-js";
 import { CircleDashed } from "lucide-react";
-import { createPayPalOrder, updateOrderAfterPayment } from "@/app/actions/payment";
+import {
+  createPayPalOrder,
+  updateOrderAfterPayment,
+} from "@/app/actions/payment";
 import { useRouter } from "next/navigation";
 
 interface PayPalPaymentButtonsProps {
@@ -13,7 +20,10 @@ interface PayPalPaymentButtonsProps {
 }
 
 // Inner component that uses the PayPal hooks
-function ButtonWrapper({ orderId, onSuccess }: Omit<PayPalPaymentButtonsProps, 'clientId'>) {
+function ButtonWrapper({
+  orderId,
+  onSuccess,
+}: Omit<PayPalPaymentButtonsProps, "clientId">) {
   const [{ isPending }] = usePayPalScriptReducer();
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -27,9 +37,7 @@ function ButtonWrapper({ orderId, onSuccess }: Omit<PayPalPaymentButtonsProps, '
       ) : (
         <>
           {error && (
-            <div className="text-red-500 text-sm mb-2 text-center">
-              {error}
-            </div>
+            <div className="text-red-500 text-sm mb-2 text-center">{error}</div>
           )}
           <PayPalButtons
             style={{
@@ -48,11 +56,7 @@ function ButtonWrapper({ orderId, onSuccess }: Omit<PayPalPaymentButtonsProps, '
                   return "";
                 }
 
-                // Check if the order was created successfully
-                console.log("PayPal order created:", result);
-
                 return result.data.id || "";
-                
               } catch (err) {
                 console.error("Error creating order:", err);
                 setError("Failed to setup payment. Please try again.");
@@ -61,9 +65,11 @@ function ButtonWrapper({ orderId, onSuccess }: Omit<PayPalPaymentButtonsProps, '
             }}
             onApprove={async (data) => {
               try {
-                console.log("PayPal order approved:", data);
                 // Call our server action to update the order
-                const result = await updateOrderAfterPayment(orderId, data.paymentID || data.orderID);
+                const result = await updateOrderAfterPayment(
+                  orderId,
+                  data.paymentID || data.orderID
+                );
 
                 if (!result.success) {
                   setError(result.error || "Failed to process payment");
@@ -93,19 +99,21 @@ function ButtonWrapper({ orderId, onSuccess }: Omit<PayPalPaymentButtonsProps, '
 }
 
 // Main component that provides the PayPal script context
-export function PayPalPaymentButtons({ clientId, orderId, onSuccess }: PayPalPaymentButtonsProps) {
-
-
-
-
+export function PayPalPaymentButtons({
+  clientId,
+  orderId,
+  onSuccess,
+}: PayPalPaymentButtonsProps) {
   return (
     <div className="w-full max-w-md">
-      <PayPalScriptProvider options={{
-        clientId,
-        currency: "USD",
-        "data-page-type": "product-details",
-        "data-sdk-integration-source": "developer-studio",
-      }}>
+      <PayPalScriptProvider
+        options={{
+          clientId,
+          currency: "USD",
+          "data-page-type": "product-details",
+          "data-sdk-integration-source": "developer-studio",
+        }}
+      >
         <ButtonWrapper orderId={orderId} onSuccess={onSuccess} />
       </PayPalScriptProvider>
       <p className="text-xs text-muted-foreground mt-2 text-center">

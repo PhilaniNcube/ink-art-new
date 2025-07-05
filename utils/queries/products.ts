@@ -101,8 +101,6 @@ export async function fetchFilteredProducts({
     return null;
   }
 
-  console.log("Filtered products:", result.data.length);
-
   return result.data;
 }
 

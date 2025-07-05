@@ -7,8 +7,6 @@ import { createClient } from "../supabase/server";
 export async function deleteProduct(prevState: unknown, formData: FormData) {
   const productId = formData.get("productId") as string; // Ensure productId is a string
 
-  console.log("Deleting product with ID:", productId); // Log the productId for debugging
-
   if (!productId) {
     console.error("Product ID is required");
     return { success: false, error: "Product ID is required" };
@@ -67,11 +65,6 @@ export async function publishPrintifyProduct(productId: string) {
     }),
   });
 
-  console.log("Setting product publish status to succeeded:", {
-    productId,
-    external: externalData,
-  });
-
   if (res.status !== 200) {
     const errorData = await res.json();
     console.error("Error setting product publish status:", errorData);
@@ -97,7 +90,6 @@ export async function publishPrintifyProduct(productId: string) {
     return { success: false, error };
   }
 
-  console.log("Product publish status set to succeeded:", data);
   revalidatePath("/dashboard/products");
   revalidatePath("/dashboard");
   revalidatePath(`/dashboard/products/${productId}`);
@@ -126,7 +118,6 @@ export async function updatePrintifyProductTitle(
 
   const data = await res.json();
 
-  console.log("Updating product:", data);
   if (res.status !== 200) {
     console.error("Error updating product:", data);
     return { success: false, error: data };
@@ -144,7 +135,6 @@ export async function updatePrintifyProductTitle(
     return { success: false, error };
   }
 
-  console.log("Product published successfully:", data);
   revalidatePath("/dashboard/products");
   return { success: true, data };
 }
@@ -172,11 +162,6 @@ export async function unlockProduct(productId: string) {
     }),
   });
 
-  console.log("Setting product publish status to succeeded:", {
-    productId,
-    external: externalData,
-  });
-
   if (res.status !== 200) {
     const errorData = await res.json();
     console.error("Error setting product publish status:", errorData);
@@ -201,7 +186,6 @@ export async function unlockProduct(productId: string) {
     return { success: false, error };
   }
 
-  console.log("Product publish status set to succeeded:", data);
   revalidatePath("/dashboard/products");
   return { success: true, data };
 }
@@ -248,8 +232,6 @@ export async function updateProductCategory(
         error: "Product not found",
       };
     }
-
-    console.log("Product category updated successfully:", data[0]);
 
     // Revalidate the dashboard products page to show updated data
     revalidatePath("/dashboard/products");
@@ -325,8 +307,6 @@ export async function toggleProductFeatured(productId: string) {
         error: "Product not found",
       };
     }
-
-    console.log("Product featured status updated successfully:", data[0]);
 
     // Revalidate the dashboard products page to show updated data
     revalidatePath("/dashboard/products");

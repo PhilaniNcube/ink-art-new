@@ -74,8 +74,6 @@ async function fetchAllPrintifyProducts(): Promise<PrintifyProduct[]> {
 // Handle GET requests to this endpoint
 export async function GET(request: Request) {
   try {
-    console.log("Starting product comparison job");
-
     // Parse query parameters
     const url = new URL(request.url);
     const rawParams = Object.fromEntries(url.searchParams.entries());
@@ -93,7 +91,6 @@ export async function GET(request: Request) {
 
     // Fetch all products from Printify
     const printifyProducts = await fetchAllPrintifyProducts();
-    console.log(`Fetched ${printifyProducts.length} products from Printify`);
 
     // Fetch all products from Supabase
     const supabase = await createClient();
@@ -117,17 +114,11 @@ export async function GET(request: Request) {
       (printifyProduct) => !supabaseProductIds.includes(printifyProduct.id)
     );
 
-    console.log(
-      `Found ${newProducts.length} new products in Printify not in Supabase`
-    );
-
     // Add new products to Supabase
     const addedProducts = [];
     const failedProducts = [];
 
     if (newProducts.length > 0) {
-      console.log("Adding new products to Supabase...");
-
       // Process products one by one to handle possible errors individually
       for (const product of newProducts) {
         try {
@@ -173,7 +164,6 @@ export async function GET(request: Request) {
               error: insertError,
             });
           } else {
-            console.log(`Successfully added product ${product.id} to Supabase`);
             addedProducts.push({ id: product.id, title: product.title });
           }
         } catch (err) {

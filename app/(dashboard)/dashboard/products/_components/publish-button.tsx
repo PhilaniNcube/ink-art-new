@@ -17,7 +17,6 @@ const PublishButton = ({ productId }: { productId: string }) => {
       console.error("Error publishing product:", response.error);
       return;
     }
-    console.log("Product published successfully:", response);
   };
 
   return (

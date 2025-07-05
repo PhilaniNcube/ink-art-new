@@ -23,9 +23,6 @@ const ProductHeader = ({
   product: Database["public"]["Tables"]["products"]["Row"];
   printifyProduct: PrintifyProduct | null;
 }) => {
-  console.log("Visible", printifyProduct?.visible);
-  console.log("Locked", printifyProduct?.is_locked);
-
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-6">
       <Link href="/dashboard/products" className="flex items-center">

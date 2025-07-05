@@ -13,11 +13,6 @@ export async function GET(request: Request) {
   try {
     const res = await request.json();
 
-    console.log(
-      "Received Printify webhook payload:",
-      JSON.stringify(res, null, 2)
-    );
-
     // send back the 200 response code
     return NextResponse.json({
       status: 200,

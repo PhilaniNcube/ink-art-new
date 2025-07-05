@@ -1,34 +1,37 @@
-import { Blog } from '@/payload-types'
-import { getBlogPost } from '@/utils/queries/blogs'
-import { Arrow } from '@radix-ui/react-dropdown-menu'
-import { format } from 'date-fns'
-import { ArrowLeft } from 'lucide-react'
-import Image from 'next/image'
-import Link from 'next/link'
-import React from 'react'
-import { RichText } from '@payloadcms/richtext-lexical/react'
-import { metadata } from '../../layout'
-import { notFound } from 'next/navigation'
+import { Blog } from "@/payload-types";
+import { getBlogPost } from "@/utils/queries/blogs";
+import { Arrow } from "@radix-ui/react-dropdown-menu";
+import { format } from "date-fns";
+import { ArrowLeft } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import React from "react";
+import { RichText } from "@payloadcms/richtext-lexical/react";
+import { metadata } from "../../layout";
+import { notFound } from "next/navigation";
 
-export async function generateMetadata({ params }: { params: Promise<{ id: number }> }) {
-  const { id } = await params
-  const post: Blog | null = await getBlogPost(id)
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: number }>;
+}) {
+  const { id } = await params;
+  const post: Blog | null = await getBlogPost(id);
 
   if (!post) {
     return {
-      title: 'Blog Post Not Found',
-      description: 'The requested blog post could not be found.',
-    }
+      title: "Blog Post Not Found",
+      description: "The requested blog post could not be found.",
+    };
   }
 
   const imageUrl = post.image?.url
     ? `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL}${post.image.url}`
-    : undefined
-
+    : undefined;
 
   return {
     metadataBase: process.env.VERCEL_URL,
-    generator: 'Next.js',
+    generator: "Next.js",
     title: post.title,
     description: post.excerpt,
     robots: {
@@ -38,44 +41,47 @@ export async function generateMetadata({ params }: { params: Promise<{ id: numbe
       googleBot: {
         index: true,
         follow: true,
-        'max-snippet': '-1',
-        'max-image-preview': 'large',
-        'max-video-preview': '-1',
-      }
+        "max-snippet": "-1",
+        "max-image-preview": "large",
+        "max-video-preview": "-1",
+      },
     },
     openGraph: {
       title: post.title,
       description: post.excerpt,
       url: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL}/blog/${post.id}`,
-      type: 'article',
+      type: "article",
       publishedTime: post.publishedDate,
-      images: imageUrl ? [
-        {
-          url: imageUrl,
-          alt: post.image?.alt || post.title,
-          width: post.image?.width || 1200,
-          height: post.image?.height || 630,
-        },
-      ] : undefined,
+      images: imageUrl
+        ? [
+            {
+              url: imageUrl,
+              alt: post.image?.alt || post.title,
+              width: post.image?.width || 1200,
+              height: post.image?.height || 630,
+            },
+          ]
+        : undefined,
     },
-
-  }
+  };
 }
 
-const BlogArticlePage = async ({ params }: { params: Promise<{ id: number }> }) => {
+const BlogArticlePage = async ({
+  params,
+}: {
+  params: Promise<{ id: number }>;
+}) => {
+  const { id } = await params;
 
-  const { id } = await params
-
-  const post: Blog | null = await getBlogPost(id)
+  const post: Blog | null = await getBlogPost(id);
 
   if (!post) {
-    notFound()
+    notFound();
   }
 
   const formattedDate = post.publishedDate
     ? format(new Date(post.publishedDate), "PPP")
-    : "No date available"
-  console.log(post)
+    : "No date available";
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -91,8 +97,6 @@ const BlogArticlePage = async ({ params }: { params: Promise<{ id: number }> }) 
 
         <article>
           <header className="mb-8">
-        
-
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
               {post.title}
             </h1>
@@ -122,12 +126,10 @@ const BlogArticlePage = async ({ params }: { params: Promise<{ id: number }> }) 
           <div className="prose prose-lg md:prose-xl max-w-none">
             <RichText data={post.content} />
           </div>
-
-  
         </article>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default BlogArticlePage
+export default BlogArticlePage;
