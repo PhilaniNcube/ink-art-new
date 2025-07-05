@@ -5,7 +5,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import Footer from "./_components/footer";
 import { admin, currentUser } from "@/utils/queries/users";
 import { fetchCategories } from "@/utils/queries/categories";
-import { featchFeaturedProducts } from "@/utils/queries/products";
+import { fetchFeaturedProducts } from "@/utils/queries/products";
 import MobileNavigation from "./_components/mobile-navigation";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -27,7 +27,7 @@ const geistSans = Geist({
 const PublicLayout = async ({ children }: { children: ReactNode }) => {
   // Fetch all the data needed for both desktop and mobile navigation
   const categoriesPromise = fetchCategories();
-  const featuredProductsPromise = featchFeaturedProducts();
+  const featuredProductsPromise = fetchFeaturedProducts();
   const userPromise = currentUser();
   const adminPromise = admin();
 
@@ -41,11 +41,21 @@ const PublicLayout = async ({ children }: { children: ReactNode }) => {
   return (
     <div suppressHydrationWarning className="bg-background text-foreground">
       <NuqsAdapter>
-        <DesktopNavigation />
+        <DesktopNavigation
+          categories={categories}
+          featuredProducts={featuredProducts}
+          user={user}
+          isAdmin={isAdmin}
+        />
         {/* Add padding bottom on mobile to account for the mobile navigation bar */}
         <div className="pb-16 lg:pb-0">{children}</div>
-        <MobileNavigation />
-        <Footer />
+        <MobileNavigation
+          categories={categories}
+          featuredProducts={featuredProducts}
+          user={user}
+          isAdmin={isAdmin}
+        />
+        <Footer categories={categories} featuredProducts={featuredProducts} />
       </NuqsAdapter>
     </div>
   );

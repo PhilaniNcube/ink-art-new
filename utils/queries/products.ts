@@ -56,7 +56,7 @@ export async function fetchAllProducts() {
   return data;
 }
 
-export async function featchFeaturedProducts() {
+export async function fetchFeaturedProducts(limit: number = 8) {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -72,7 +72,8 @@ export async function featchFeaturedProducts() {
     `
     )
     .eq("featured", true)
-    .order("title", { ascending: true });
+    .order("title", { ascending: true })
+    .limit(limit);
 
   if (error) {
     console.error("Error fetching featured products:", error);

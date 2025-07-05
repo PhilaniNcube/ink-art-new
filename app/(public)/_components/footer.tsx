@@ -2,8 +2,14 @@ import React from "react";
 import Link from "next/link";
 import { Facebook, Instagram, Mail, Phone } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { Database } from "@/utils/supabase/types";
 
-const Footer = () => {
+interface FooterProps {
+  categories?: Database["public"]["Tables"]["categories"]["Row"][];
+  featuredProducts?: Database["public"]["Tables"]["products"]["Row"][];
+}
+
+const Footer = ({ categories, featuredProducts }: FooterProps) => {
   const currentYear = new Date().getFullYear();
 
   return (
