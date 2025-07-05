@@ -11,11 +11,15 @@ import { getAllCategories } from "@/utils/queries/categories";
 export const dynamic = "force-dynamic";
 
 const DashboardProducts = async () => {
+  const fetchAllProductsData = fetchAllProducts();
+  const fetchPrintifyProductsData = fetchPrintifyProducts();
+  const fetchCategoriesData = getAllCategories();
+
   // Fetch products and categories from your API or database here
   const [products, categories, printifyProducts] = await Promise.all([
-    fetchAllProducts(),
-    getAllCategories(),
-    fetchPrintifyProducts(),
+    fetchAllProductsData,
+    fetchCategoriesData,
+    fetchPrintifyProductsData,
   ]);
 
   if (!products) {
