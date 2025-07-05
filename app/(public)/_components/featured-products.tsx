@@ -16,7 +16,7 @@ const FeaturedProducts = async () => {
     <section className="container mx-auto py-4 mt-12">
       <h2 className="text-2xl font-bold mb-4 text-center">Featured Products</h2>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {products.map((product) => {
+        {products.map((product, index) => {
           // I want to sort the images by largest to smallest size but this is determined by the price of the variant
           // so I will sort the variants by price and then get the first image of the first variant
           const sortedVariants = product.variants.sort(
@@ -29,6 +29,8 @@ const FeaturedProducts = async () => {
             image.variant_ids?.includes(firstVariant.id)
           );
 
+          console.log("Product images:", product, index);
+
           return (
             <Link
               href={`/products/${product.id}`}
@@ -36,7 +38,7 @@ const FeaturedProducts = async () => {
               className="bg-white rounded-lg aspect-square overflow-hidden shadow-md flex flex-col items-center"
             >
               <ImageDisplay
-                images={images}
+                images={product.images}
                 altText={product.title}
                 width={500}
                 height={500}
