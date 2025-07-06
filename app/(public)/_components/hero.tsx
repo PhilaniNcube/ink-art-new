@@ -17,17 +17,17 @@ const Hero = () => {
             height={768}
             className="w-full h-full object-cover rounded-lg"
           />
-          <div className="absolute inset-0 flex justify-center  rounded-lg flex-col p-5">
+          <div className="absolute inset-0 flex justify-center items-center rounded-lg flex-col p-5">
             <h1 className="text-4xl font-bold">Welcome to Ink Art</h1>
-            <p className="mt-4 hidden md:block text-balance font-medium max-w-xl">
+            {/* <p className="mt-4 hidden md:block text-balance font-medium max-w-xl">
               Discover the world of art and creativity with our curated
               collection of unique pieces. Whether you're an artist, collector,
               or simply an admirer, we have something for everyone. Explore our
               gallery and find your next masterpiece today!
-            </p>
+            </p> */}
             <Link
-              href="/products"
-              className="mt-4 w-fit inline-block bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300"
+              href="/categories"
+              className="mt-4 w-fit inline-block bg-black text-white py-2 px-4 rounded-none hover:bg-blue-600 transition duration-300 text-4xl font-semibold"
             >
               Shop Now
               <ArrowRight className="ml-2 h-4 w-4 inline" />

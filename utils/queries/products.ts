@@ -86,6 +86,40 @@ export async function fetchFeaturedProducts(limit: number = 8) {
 export async function fetchFilteredProducts({
   categories,
   query,
+  page = 1,
+  limit = 20,
+}: {
+  categories?: string;
+  query?: string;
+  page?: number;
+  limit?: number;
+}) {
+  const supabase = await createClient();
+
+  const offset = (page - 1) * limit;
+
+  const result = await supabase.rpc("get_filtered_products", {
+    category_slugs: categories ? categories : "",
+    title_search: query ? query : "",
+  });
+
+  if (result.error) {
+    console.error("Error fetching filtered products:", result.error);
+    return null;
+  }
+
+  // Apply pagination to the result
+  const paginatedData = result.data
+    ? result.data.slice(offset, offset + limit)
+    : [];
+
+  return paginatedData;
+}
+
+// Get total count of filtered products for pagination
+export async function fetchFilteredProductsCount({
+  categories,
+  query,
 }: {
   categories?: string;
   query?: string;
@@ -98,11 +132,11 @@ export async function fetchFilteredProducts({
   });
 
   if (result.error) {
-    console.error("Error fetching filtered products:", result.error);
-    return null;
+    console.error("Error fetching filtered products count:", result.error);
+    return 0;
   }
 
-  return result.data;
+  return result.data ? result.data.length : 0;
 }
 
 export async function fetchProductById(productId: string) {
