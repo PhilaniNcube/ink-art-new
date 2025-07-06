@@ -1,7 +1,7 @@
 import React, { Suspense } from "react";
 import ProductsFilter from "../_components/products-filter";
 import FilteredProducts from "./_components/filtered-products";
-import FeaturedProductsSkeleton from "../_components/featured-products-skeleton";
+import ProductsSkeleton from "./_components/products-skeleton";
 import { SearchParams } from "@/utils/supabase/types";
 
 const ProductsPage = async (props: { searchParams: SearchParams }) => {
@@ -14,7 +14,7 @@ const ProductsPage = async (props: { searchParams: SearchParams }) => {
   return (
     <div className="container mx-auto py-4">
       <ProductsFilter />
-      <Suspense fallback={<FeaturedProductsSkeleton />}>
+      <Suspense fallback={<ProductsSkeleton />}>
         <FilteredProducts categories={categories} query={query} page={page} />
       </Suspense>
     </div>
