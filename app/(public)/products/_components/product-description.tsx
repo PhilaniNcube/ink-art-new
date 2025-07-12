@@ -63,7 +63,7 @@ const ProductDescription = ({
             }
           }}
         >
-          <SelectTrigger className="w-full mt-2">
+          <SelectTrigger className="w-full mt-2 hover:border-gray-300 hover:bg-gray-50">
             <span className="text-gray-500">
               {selectedProductVariant.title}
             </span>
@@ -95,16 +95,6 @@ const ProductDescription = ({
         <h3 className="text-2xl md:text-4xl font-medium text-zinc-700">
           {formatCurrency(selectedProductVariant.price)}
         </h3>
-
-        {/* Display the size of the selected variant */}
-        <div className="flex items-center mt-2">
-          <span className="text-gray-500">
-            <RulerIcon />
-          </span>
-          <span className="text-gray-500 ml-2">
-            {selectedProductVariant.title}
-          </span>
-        </div>
 
         {/* the selected variant has an id, that is also on the image object, filter the images array to display the images that match the selectedVariant ID  */}
 

@@ -24,7 +24,7 @@ export function ImageDisplay({
   width,
   height,
   className = "",
-  defaultView = "front",
+  defaultView = "side",
   hoverView = "context-1",
 }: ImageDisplayProps) {
   console.log("ImageDisplay component rendered with images:", images);
@@ -57,7 +57,7 @@ export function ImageDisplay({
   return (
     <div className="group relative w-full h-full overflow-hidden">
       {/* Default image (visible by default) */}
-      <img
+      <Image
         src={defaultImage.src}
         alt={altText}
         width={width}
@@ -68,7 +68,7 @@ export function ImageDisplay({
 
       {/* Hover image (hidden by default, shown on hover) */}
       {hoverImage && hoverImage.src !== defaultImage.src && (
-        <img
+        <Image
           src={hoverImage.src}
           alt={`${altText} (alternative view)`}
           width={width}

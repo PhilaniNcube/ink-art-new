@@ -41,7 +41,7 @@ const MegaMenu = ({ categories, featuredProducts }: PageProps) => {
     <NavigationMenu className="w-full">
       <NavigationMenuList className="w-full">
         <NavigationMenuItem>
-          <NavigationMenuTrigger className="h-10 px-4 py-2">
+          <NavigationMenuTrigger className="h-10 px-4 py-2 text-xl">
             <Grid3X3 className="mr-2 h-4 w-4" />
             Categories
           </NavigationMenuTrigger>
@@ -65,8 +65,8 @@ const MegaMenu = ({ categories, featuredProducts }: PageProps) => {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuTrigger className="h-10 px-4 py-2">
-            <ShoppingBasket className="mr-2 h-4 w-4" />
+          <NavigationMenuTrigger className="h-10 px-4 py-2 text-xl">
+            <ShoppingBasket className="mr-2 h-4 w-4 " />
             Featured Products
           </NavigationMenuTrigger>
           <NavigationMenuContent className="w-[800px]">
@@ -89,7 +89,7 @@ const MegaMenu = ({ categories, featuredProducts }: PageProps) => {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuTrigger className="h-10 px-4 py-2">
+          <NavigationMenuTrigger className="h-10 px-4 py-2 text-xl">
             <Users className="mr-2 h-4 w-4" />
             About
           </NavigationMenuTrigger>
@@ -134,7 +134,7 @@ const MegaMenu = ({ categories, featuredProducts }: PageProps) => {
         </NavigationMenuItem>
 
         <NavigationMenuItem>
-          <NavigationMenuTrigger className="h-10 px-4 py-2">
+          <NavigationMenuTrigger className="h-10 px-4 py-2 text-xl">
             <Phone className="mr-2 h-4 w-4" />
             Contact
           </NavigationMenuTrigger>
@@ -202,20 +202,20 @@ const MegaMenu = ({ categories, featuredProducts }: PageProps) => {
             </div>
           </NavigationMenuContent>
         </NavigationMenuItem>
-        <NavigationMenuItem>
+        {/* <NavigationMenuItem>
           <NavigationMenuLink asChild>
             <Link
               href="/blog"
               className={cn(
                 navigationMenuTriggerStyle,
-                "flex items-center h-10 px-4 py-2"
+                "flex items-center h-10 px-4  text-xl font-medium"
               )}
             >
               <PenLine className="mr-2 h-4 w-4" />
               Blog
             </Link>
           </NavigationMenuLink>
-        </NavigationMenuItem>
+        </NavigationMenuItem> */}
       </NavigationMenuList>
     </NavigationMenu>
   );
