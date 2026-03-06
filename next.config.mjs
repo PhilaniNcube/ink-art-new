@@ -1,12 +1,9 @@
 import { withPayload } from '@payloadcms/next/withPayload'
-import { min } from 'date-fns';
 
 
 const nextConfig = {
   /* config options here */
-   experimental: {
-    reactCompiler: true,
-  },
+  reactCompiler: true,
   images: {
     minimumCacheTTL: 2678400,
     remotePatterns: [
@@ -26,6 +23,14 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: 'images.unsplash.com'
+      },
+      {
+        protocol: "https",
+        hostname: 'utfs.io'
+      },
+      {
+        protocol: "https",
+        hostname: '*.ufs.sh'
       }
 
     ]
