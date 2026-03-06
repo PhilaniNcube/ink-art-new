@@ -7,6 +7,7 @@ import { admin, currentUser } from "@/utils/queries/users";
 import { fetchCategories } from "@/utils/queries/categories";
 import { fetchFeaturedProducts } from "@/utils/queries/products";
 import MobileNavigation from "./_components/mobile-navigation";
+import '../globals.css'
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`

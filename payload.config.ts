@@ -3,6 +3,7 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 
 import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { resendAdapter } from '@payloadcms/email-resend'
 import { Media } from './collections/Media'
 import { Blog } from './collections/Blog'
 import { uploadthingStorage } from '@payloadcms/storage-uploadthing'
@@ -19,6 +20,14 @@ export default buildConfig({
 
   // Your Payload secret - should be a complex and secure string, unguessable
   secret: process.env.PAYLOAD_SECRET || '',
+
+  // Email adapter for password resets and other transactional emails
+  email: resendAdapter({
+    defaultFromAddress: 'info@inkart.store',
+    defaultFromName: 'Ink Art',
+    apiKey: process.env.RESEND_API_KEY || '',
+  }),
+
   // Whichever Database Adapter you're using should go here
   // Mongoose is shown as an example, but you can also use Postgres
   db: postgresAdapter({
