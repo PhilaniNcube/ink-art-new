@@ -1,6 +1,8 @@
 import { fetchProfiles } from '@/utils/queries/profiles';
 import React from 'react'
 
+export const dynamic = 'force-dynamic';
+
 const CustomersPage = async () => {
 
   const customers = await fetchProfiles();

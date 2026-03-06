@@ -21,6 +21,8 @@ import ProductsTable from "./products/_components/products-table";
 import { OrdersContent } from "./_components/orders-content";
 import { getAllCategories } from "@/utils/queries/categories";
 
+export const dynamic = 'force-dynamic';
+
 const DashboardHome = async () => {
   const revenueData = fetchOrdersAnalytics();
   const allOrdersData = fetchAllOrders();

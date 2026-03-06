@@ -8,6 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProductDetailsSkeleton from "@/app/(public)/products/_components/product-details-skeleton";
 import ProductComponent from "../_components/product-component";
 
+export const dynamic = 'force-dynamic';
+
 const page = async ({
   params,
 }: {

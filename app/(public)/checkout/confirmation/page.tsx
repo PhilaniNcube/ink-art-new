@@ -8,7 +8,7 @@ import { PayPalPaymentButtons } from '@/components/checkout/paypal-payment-butto
 
 // Static metadata
 export const metadata = {
-  title: 'Order Confirmation | FarmTrack',
+  title: 'Order Confirmation | InkArt',
   description: 'Thank you for your order',
 };
 

@@ -2,6 +2,8 @@ import { fetchAllOrders } from '@/utils/queries/orders';
 import React from 'react'
 import { OrdersTable } from '../_components/orders-table';
 
+export const dynamic = 'force-dynamic';
+
 const OrdersPage = async () => {
 
   const orders = await fetchAllOrders();

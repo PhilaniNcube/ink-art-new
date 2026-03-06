@@ -10,6 +10,8 @@ import {
 } from "@/utils/queries/printify";
 import { Suspense } from "react";
 
+export const dynamic = 'force-dynamic';
+
 const CreatePrintifyProducts = async () => {
   // Fetch Printify blueprints
 

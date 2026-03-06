@@ -4,6 +4,8 @@ import { DataTable } from "../../categories/_components/categories-table";
 import { columns } from "../../categories/_components/columns";
 import { AddCategoryModal } from "./_components/add-category-modal";
 
+export const dynamic = 'force-dynamic';
+
 export default async function CategoriesPage() {
   const data = await fetchCategories();
 
