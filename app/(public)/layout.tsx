@@ -7,7 +7,7 @@ import { admin, currentUser } from "@/utils/queries/users";
 import { fetchCategories } from "@/utils/queries/categories";
 import { fetchFeaturedProducts } from "@/utils/queries/products";
 import MobileNavigation from "./_components/mobile-navigation";
-import '../globals.css'
+import "../globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -26,39 +26,41 @@ const geistSans = Geist({
 });
 
 const PublicLayout = async ({ children }: { children: ReactNode }) => {
-  // Fetch all the data needed for both desktop and mobile navigation
+  // Start data fetches but don't await — pass promises to components
+  // so they can be unwrapped closer to where the data is used.
+  // This enables partial pre-rendering and better caching.
   const categoriesPromise = fetchCategories();
   const featuredProductsPromise = fetchFeaturedProducts();
   const userPromise = currentUser();
   const adminPromise = admin();
 
-  const [categories, featuredProducts, user, isAdmin] = await Promise.all([
-    categoriesPromise,
-    featuredProductsPromise,
-    userPromise,
-    adminPromise,
-  ]);
-
   return (
-    <div suppressHydrationWarning className="bg-background text-foreground">
-      <NuqsAdapter>
-        <DesktopNavigation
-          categories={categories}
-          featuredProducts={featuredProducts}
-          user={user}
-          isAdmin={isAdmin}
-        />
-        {/* Add padding bottom on mobile to account for the mobile navigation bar */}
-        <div className="pb-16 lg:pb-0">{children}</div>
-        <MobileNavigation
-          categories={categories}
-          featuredProducts={featuredProducts}
-          user={user}
-          isAdmin={isAdmin}
-        />
-        <Footer categories={categories} featuredProducts={featuredProducts} />
-      </NuqsAdapter>
-    </div>
+    <html lang="en" className={geistSans.className}>
+      <body>
+        <div suppressHydrationWarning className="bg-background text-foreground">
+          <NuqsAdapter>
+            <DesktopNavigation
+              categoriesPromise={categoriesPromise}
+              featuredProductsPromise={featuredProductsPromise}
+              userPromise={userPromise}
+              isAdminPromise={adminPromise}
+            />
+            {/* Add padding bottom on mobile to account for the mobile navigation bar */}
+            <div className="pb-16 lg:pb-0">{children}</div>
+            <MobileNavigation
+              categoriesPromise={categoriesPromise}
+              featuredProductsPromise={featuredProductsPromise}
+              userPromise={userPromise}
+              isAdminPromise={adminPromise}
+            />
+            <Footer
+              categoriesPromise={categoriesPromise}
+              featuredProductsPromise={featuredProductsPromise}
+            />
+          </NuqsAdapter>
+        </div>
+      </body>
+    </html>
   );
 };
 

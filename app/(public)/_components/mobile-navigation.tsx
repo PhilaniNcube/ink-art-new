@@ -11,18 +11,24 @@ import { Database } from "@/utils/supabase/types";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 
 interface MobileNavigationProps {
-  user: SupabaseUser | null;
-  isAdmin: boolean;
-  categories: Database["public"]["Tables"]["categories"]["Row"][];
-  featuredProducts: Database["public"]["Tables"]["products"]["Row"][];
+  userPromise: Promise<SupabaseUser | null>;
+  isAdminPromise: Promise<boolean>;
+  categoriesPromise: Promise<Database["public"]["Tables"]["categories"]["Row"][]>;
+  featuredProductsPromise: Promise<Database["public"]["Tables"]["products"]["Row"][]>;
 }
 
-const MobileNavigation = ({
-  user,
-  isAdmin,
-  categories,
-  featuredProducts,
+const MobileNavigation = async ({
+  userPromise,
+  isAdminPromise,
+  categoriesPromise,
+  featuredProductsPromise,
 }: MobileNavigationProps) => {
+  const [user, isAdmin, categories, featuredProducts] = await Promise.all([
+    userPromise,
+    isAdminPromise,
+    categoriesPromise,
+    featuredProductsPromise,
+  ]);
   return (
     <div className="lg:hidden fixed bottom-0 left-0 right-0 border-t bg-background z-40">
       {/* Bottom Tab Navigation */}

@@ -5,11 +5,15 @@ import { Separator } from "@/components/ui/separator";
 import { Database } from "@/utils/supabase/types";
 
 interface FooterProps {
-  categories?: Database["public"]["Tables"]["categories"]["Row"][];
-  featuredProducts?: Database["public"]["Tables"]["products"]["Row"][];
+  categoriesPromise?: Promise<Database["public"]["Tables"]["categories"]["Row"][]>;
+  featuredProductsPromise?: Promise<Database["public"]["Tables"]["products"]["Row"][]>;
 }
 
-const Footer = ({ categories, featuredProducts }: FooterProps) => {
+const Footer = async ({ categoriesPromise, featuredProductsPromise }: FooterProps) => {
+  const [categories, featuredProducts] = await Promise.all([
+    categoriesPromise ?? Promise.resolve(undefined),
+    featuredProductsPromise ?? Promise.resolve(undefined),
+  ]);
   const currentYear = new Date().getFullYear();
 
   return (

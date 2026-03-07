@@ -9,18 +9,24 @@ import { Database } from "@/utils/supabase/types";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 
 interface DesktopNavigationProps {
-  categories: Database["public"]["Tables"]["categories"]["Row"][];
-  featuredProducts: Database["public"]["Tables"]["products"]["Row"][];
-  user: SupabaseUser | null;
-  isAdmin: boolean;
+  categoriesPromise: Promise<Database["public"]["Tables"]["categories"]["Row"][]>;
+  featuredProductsPromise: Promise<Database["public"]["Tables"]["products"]["Row"][]>;
+  userPromise: Promise<SupabaseUser | null>;
+  isAdminPromise: Promise<boolean>;
 }
 
-const DesktopNavigation = ({
-  categories,
-  featuredProducts,
-  user,
-  isAdmin,
+const DesktopNavigation = async ({
+  categoriesPromise,
+  featuredProductsPromise,
+  userPromise,
+  isAdminPromise,
 }: DesktopNavigationProps) => {
+  const [categories, featuredProducts, user, isAdmin] = await Promise.all([
+    categoriesPromise,
+    featuredProductsPromise,
+    userPromise,
+    isAdminPromise,
+  ]);
   return (
     <div className=" px-4 lg:px-0 py-2 border-b hidden lg:block bg-white shadow top-0 left-0 right-0 z-50 sticky">
       <header className="container mx-auto">

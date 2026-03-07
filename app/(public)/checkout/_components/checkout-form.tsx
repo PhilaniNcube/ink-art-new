@@ -17,6 +17,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 import Image from 'next/image';
 import { formatPrice } from '@/utils/utils';
 import { useRouter } from 'next/navigation';
@@ -25,6 +27,15 @@ import { Loader2 } from 'lucide-react';
 import { createCheckoutOrder } from '@/utils/actions/checkout';
 import { OrderItem } from '@/utils/supabase/types';
 import { formatCurrency } from '@/lib/utils';
+
+// Shipping options
+const SHIPPING_OPTIONS = [
+  { value: 'economy', label: 'Economy', description: '4–8 Business Days', price: 1000 },
+  { value: 'standard', label: 'Standard', description: '2–5 Business Days', price: 1500 },
+  { value: 'priority', label: 'Priority', description: '2–3 Business Days', price: 4500 },
+] as const;
+
+type ShippingMethod = (typeof SHIPPING_OPTIONS)[number]['value'];
 
 // Define form schema with Zod
 const checkoutFormSchema = z.object({
@@ -36,6 +47,9 @@ const checkoutFormSchema = z.object({
   city: z.string().min(2, { message: 'City must be at least 2 characters.' }),
   state: z.string().min(2, { message: 'State must be at least 2 characters.' }),
   postalCode: z.string().min(3, { message: 'Postal code must be at least 3 characters.' }),
+  shippingMethod: z.enum(['economy', 'standard', 'priority'], {
+    required_error: 'Please select a shipping method.',
+  }),
 });
 
 type CheckoutFormValues = z.infer<typeof checkoutFormSchema>;
@@ -58,6 +72,7 @@ export function CheckoutForm() {
       city: '',
       state: '',
       postalCode: '',
+      shippingMethod: 'economy',
     },
   });
   
@@ -87,6 +102,11 @@ export function CheckoutForm() {
         variantSKU: item.sku,
       }));
       
+      // Calculate shipping cost
+      const shippingCost = SHIPPING_OPTIONS.find(
+        (opt) => opt.value === data.shippingMethod
+      )!.price;
+
       // Create the order using a server action
       const result = await createCheckoutOrder({
         first_name: data.firstName,
@@ -99,7 +119,8 @@ export function CheckoutForm() {
         postal_code: data.postalCode,
         order_items: orderItems,
         subtotal: totalPrice(),
-        total: totalPrice(), // Add shipping calculation if needed
+        shipping: shippingCost,
+        total: totalPrice() + shippingCost,
       });
       
       if (result.success) {
@@ -135,7 +156,8 @@ export function CheckoutForm() {
   
   // Calculate cart summary
   const subtotal = totalPrice();
-  const shipping = 0; // You can calculate this based on your business logic
+  const selectedShipping = form.watch('shippingMethod');
+  const shipping = SHIPPING_OPTIONS.find((opt) => opt.value === selectedShipping)?.price ?? 10;
   const total = subtotal + shipping;
   
   return (
@@ -186,7 +208,7 @@ export function CheckoutForm() {
               </div>
               <div className="flex justify-between text-sm mt-2">
                 <span>Shipping</span>
-                <span>{shipping === 0 ? 'Free' : formatCurrency(shipping)}</span>
+                <span>{formatCurrency(shipping)}</span>
               </div>
               <Separator className="my-3" />
               <div className="flex justify-between font-medium">
@@ -315,6 +337,43 @@ export function CheckoutForm() {
                       <FormLabel>Postal code</FormLabel>
                       <FormControl>
                         <Input placeholder="10001" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Separator className="my-2" />
+
+                <FormField
+                  control={form.control}
+                  name="shippingMethod"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3">
+                      <FormLabel>Shipping Method</FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          className="flex flex-col space-y-2"
+                        >
+                          {SHIPPING_OPTIONS.map((option) => (
+                            <Label
+                              key={option.value}
+                              htmlFor={option.value}
+                              className="flex items-center justify-between rounded-md border p-3 cursor-pointer hover:bg-accent [&:has([data-state=checked])]:border-primary"
+                            >
+                              <div className="flex items-center space-x-3">
+                                <RadioGroupItem value={option.value} id={option.value} />
+                                <div>
+                                  <p className="text-sm font-medium">{option.label}</p>
+                                  <p className="text-xs text-muted-foreground">{option.description}</p>
+                                </div>
+                              </div>
+                              <span className="text-sm font-medium">{formatCurrency(option.price)}</span>
+                            </Label>
+                          ))}
+                        </RadioGroup>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
