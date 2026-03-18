@@ -83,9 +83,51 @@ export async function createPayPalOrder(orderId: string) {
 export async function updateOrderAfterPayment(orderId: string, paypalOrderId: string) {
   try {
     const supabase = await createClient();
+
+    // Capture the PayPal order to actually charge the buyer
+    const tokenRes = await fetch(`${process.env.PAYPAL_API_URL}/v1/oauth2/token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Basic ${Buffer.from(`${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`).toString('base64')}`,
+      },
+      body: new URLSearchParams({ grant_type: 'client_credentials' }),
+    });
+
+    if (!tokenRes.ok) {
+      console.error('Error fetching PayPal access token:', await tokenRes.text());
+      return { success: false, error: 'Failed to authenticate with PayPal' };
+    }
+
+    const { access_token } = await tokenRes.json();
+
+    const captureRes = await fetch(
+      `${process.env.PAYPAL_API_URL}/v2/checkout/orders/${paypalOrderId}/capture`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${access_token}`,
+        },
+      }
+    );
+
+    if (!captureRes.ok) {
+      const errorText = await captureRes.text();
+      console.error('Error capturing PayPal order:', errorText);
+      return { success: false, error: 'Failed to capture payment with PayPal' };
+    }
+
+    const captureData = await captureRes.json();
+
+    if (captureData.status !== 'COMPLETED') {
+      console.error('PayPal capture not completed:', captureData.status);
+      return { success: false, error: `Payment capture status: ${captureData.status}` };
+    }
+
     const paidAt = new Date().toISOString();
 
-    // Update order in the database
+    // Update order in the database only after successful capture
     const { error } = await supabase
       .from('orders')
       .update({
@@ -137,6 +179,117 @@ export async function updateOrderAfterPayment(orderId: string, paypalOrderId: st
     return { success: true };
   } catch (error) {
     console.error('Error in updateOrderAfterPayment:', error);
+    return { success: false, error: 'An unexpected error occurred' };
+  }
+}
+
+// Function to check PayPal payment status for an order
+// If the payment was never captured, marks the order as unpaid in the database.
+export async function checkPayPalPaymentStatus(orderId: string) {
+  try {
+    const supabase = await createClient();
+
+    const { data: order, error } = await supabase
+      .from('orders')
+      .select('payment_id, paid')
+      .eq('id', orderId)
+      .single();
+
+    if (error || !order) {
+      return { success: false, error: 'Order not found' };
+    }
+
+    if (!order.payment_id) {
+      return {
+        success: true,
+        status: 'NO_PAYMENT',
+        message: 'No PayPal payment associated with this order',
+      };
+    }
+
+    // Get PayPal access token
+    const tokenRes = await fetch(`${process.env.PAYPAL_API_URL}/v1/oauth2/token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Basic ${Buffer.from(`${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`).toString('base64')}`,
+      },
+      body: new URLSearchParams({ grant_type: 'client_credentials' }),
+    });
+
+    if (!tokenRes.ok) {
+      console.error('Error fetching PayPal access token:', await tokenRes.text());
+      return { success: false, error: 'Failed to authenticate with PayPal' };
+    }
+
+    const { access_token } = await tokenRes.json();
+
+    // Check order status on PayPal
+    const orderRes = await fetch(
+      `${process.env.PAYPAL_API_URL}/v2/checkout/orders/${order.payment_id}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${access_token}`,
+        },
+      }
+    );
+
+    if (!orderRes.ok) {
+      const errorText = await orderRes.text();
+      console.error('Error fetching PayPal order status:', errorText);
+      return { success: false, error: 'Failed to fetch payment status from PayPal' };
+    }
+
+    const paypalOrder = await orderRes.json();
+
+    const purchaseUnit = paypalOrder.purchase_units?.[0];
+    const capture = purchaseUnit?.payments?.captures?.[0];
+
+    // If PayPal order is not COMPLETED and the DB says paid, fix the DB
+    const isCaptured = paypalOrder.status === 'COMPLETED';
+    if (!isCaptured && order.paid) {
+      await supabase
+        .from('orders')
+        .update({ paid: false, paid_at: null })
+        .eq('id', orderId);
+
+      revalidatePath(`/checkout/confirmation`);
+      revalidatePath(`/account/orders`);
+      revalidatePath(`/dashboard/orders/${orderId}`);
+    }
+
+    return {
+      success: true,
+      status: paypalOrder.status,
+      reconciled: !isCaptured && order.paid,
+      paypalOrderId: paypalOrder.id,
+      payer: paypalOrder.payer
+        ? {
+            email: paypalOrder.payer.email_address,
+            name: `${paypalOrder.payer.name?.given_name ?? ''} ${paypalOrder.payer.name?.surname ?? ''}`.trim(),
+            payerId: paypalOrder.payer.payer_id,
+          }
+        : null,
+      amount: purchaseUnit?.amount
+        ? {
+            currency: purchaseUnit.amount.currency_code,
+            value: purchaseUnit.amount.value,
+          }
+        : null,
+      capture: capture
+        ? {
+            id: capture.id,
+            status: capture.status,
+            amount: capture.amount?.value,
+            currency: capture.amount?.currency_code,
+            createTime: capture.create_time,
+          }
+        : null,
+    };
+  } catch (error) {
+    console.error('Error in checkPayPalPaymentStatus:', error);
     return { success: false, error: 'An unexpected error occurred' };
   }
 }

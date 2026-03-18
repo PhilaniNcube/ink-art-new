@@ -23,6 +23,7 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
+import { CheckPaymentStatusButton } from "./check-payment-status-button";
 
 const OrderDetails = async ({
   paramsPromise,
@@ -172,6 +173,8 @@ const OrderDetails = async ({
                 </span>
               </div>
             )}
+            <Separator className="my-2" />
+            <CheckPaymentStatusButton orderId={order.id} />
           </CardContent>
         </Card>
 
