@@ -116,7 +116,7 @@ const ProductsTable = ({
                 currentCategories={categoryIds}
                 availableCategories={categories}
                 onCategoriesUpdated={(productId, newCategories) => {
-                  console.log("Categories updated:", productId, newCategories);
+                  // console.log("Categories updated:", productId, newCategories);
                   // The optimistic update is handled by the component itself
                 }}
               />

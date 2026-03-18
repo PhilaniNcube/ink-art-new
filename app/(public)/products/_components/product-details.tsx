@@ -6,7 +6,9 @@ import ProductImages from "./product-images";
 import ProductDescription from "./product-description";
 import { fetchProductById } from "@/utils/queries/products";
 
-const ProductDetails = async ({ product_id }: { product_id: string }) => {
+const ProductDetails = async ({ paramsPromise }: { paramsPromise: Promise<{ product_id: string }> }) => {
+  
+  const { product_id } = await paramsPromise;
   const product = await fetchProductById(product_id);
 
   if (!product) {

@@ -7,7 +7,7 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, getAvailableVariants } from "@/lib/utils";
 
 import { Database } from "@/utils/supabase/types";
 import { Separator } from "@radix-ui/react-separator";
@@ -21,8 +21,11 @@ const ProductDescription = ({
 }: {
   product: Database["public"]["Tables"]["products"]["Row"];
 }) => {
+  // Filter to only show available variants
+  const availableVariants = getAvailableVariants(product.variants || []);
+
   // Safety check for variants
-  if (!product.variants || product.variants.length === 0) {
+  if (availableVariants.length === 0) {
     return (
       <div>
         <h1 className="text-2xl md:text-3xl">{product.title}</h1>
@@ -35,16 +38,16 @@ const ProductDescription = ({
 
   // Use nuqs to manage the selected variant in URL state
   const [selectedVariantId, setSelectedVariantId] = useQueryState("variant", {
-    defaultValue: product.variants[0]?.id?.toString() || "",
+    defaultValue: availableVariants[0]?.id?.toString() || "",
   });
 
   // Find the selected variant based on the URL parameter
   const selectedProductVariant = React.useMemo(() => {
-    const variant = product.variants.find(
+    const variant = availableVariants.find(
       (variant) => variant.id.toString() === selectedVariantId
     );
-    return variant || product.variants[0];
-  }, [selectedVariantId, product.variants]);
+    return variant || availableVariants[0];
+  }, [selectedVariantId, availableVariants]);
 
   return (
     <div>
@@ -72,7 +75,7 @@ const ProductDescription = ({
             </span>
           </SelectTrigger>
           <SelectContent className="w-full">
-            {product.variants.map((variant) => (
+            {availableVariants.map((variant) => (
               <SelectItem
                 key={variant.id}
                 value={variant.id.toString()}

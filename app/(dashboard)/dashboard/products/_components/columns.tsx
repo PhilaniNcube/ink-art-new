@@ -128,7 +128,7 @@ export const createColumns = (
           availableCategories={categories}
           onCategoriesUpdated={(productId, newCategories) => {
             // The table will refresh automatically due to revalidatePath in the server action
-            console.log("Categories updated:", productId, newCategories);
+            // console.log("Categories updated:", productId, newCategories);
           }}
         />
       );

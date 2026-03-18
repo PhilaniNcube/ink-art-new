@@ -29,7 +29,10 @@ const AddToCartButton = ({
   const { addItem, setIsCartOpen } = useCart();
   const [isAdding, setIsAdding] = useState(false);
 
+  const isUnavailable = !variant.is_available || !variant.is_enabled;
+
   const handleAddToCart = () => {
+    if (isUnavailable) return;
     setIsAdding(true);
     
     addItem({
@@ -52,10 +55,10 @@ const AddToCartButton = ({
     <Button 
       onClick={handleAddToCart} 
       className={cn("flex items-center gap-2 w-full text-lg bg-blue-500 rounded-none", className)}
-      disabled={isAdding}
+      disabled={isAdding || isUnavailable}
     >
       <ShoppingBag size={16} />
-      {isAdding ? 'Adding...' : 'Add to cart'}
+      {isUnavailable ? 'Unavailable' : isAdding ? 'Adding...' : 'Add to cart'}
     </Button>
   );
 }

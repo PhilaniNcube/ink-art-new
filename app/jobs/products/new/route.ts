@@ -107,29 +107,38 @@ export async function GET(request: Request) {
       );
     }
 
-    // Find products in Printify that are not in Supabase
+    // Separate new products from existing ones
     const supabaseProductIds = supabaseProducts?.map((p) => p.id) || [];
 
     const newProducts = printifyProducts.filter(
       (printifyProduct) => !supabaseProductIds.includes(printifyProduct.id)
     );
 
-    // Add new products to Supabase
+    const existingProducts = printifyProducts.filter(
+      (printifyProduct) => supabaseProductIds.includes(printifyProduct.id)
+    );
+
+    // Helper: filter variants to only available and enabled ones
+    const filterVariants = (variants: any[]) =>
+      (variants || []).filter(
+        (v: { is_available?: boolean; is_enabled?: boolean }) =>
+          v.is_available !== false && v.is_enabled !== false
+      );
+
+    // --- Insert new products ---
     const addedProducts = [];
     const failedProducts = [];
 
     if (newProducts.length > 0) {
-      // Process products one by one to handle possible errors individually
       for (const product of newProducts) {
         try {
-          // Map Printify product to Supabase product schema
           const supabaseProduct = {
             id: product.id,
             title: product.title,
             description: product.description || "",
             tags: product.tags || [],
             options: product.options || null,
-            variants: product.variants || [],
+            variants: filterVariants(product.variants),
             images: product.images || [],
             created_at: product.created_at || new Date().toISOString(),
             updated_at: product.updated_at || new Date().toISOString(),
@@ -141,14 +150,12 @@ export async function GET(request: Request) {
             print_provider_id: product.print_provider_id || 0,
             print_areas: product.print_areas || [],
             print_details: product.print_details || null,
-            // Default values for fields that might not exist in Printify but are required in Supabase
             sales_channel_properties: product.sales_channel_properties || null,
             twodaydelivery_enabled: false,
             featured: false,
-            category: null, // Can be updated later if needed
+            category: null,
           };
 
-          // Insert the product into Supabase
           const { error: insertError } = await supabase
             .from("products")
             .insert(supabaseProduct);
@@ -177,8 +184,52 @@ export async function GET(request: Request) {
       }
     }
 
+    // --- Update existing products with fresh variant data ---
+    const updatedProducts = [];
+    const failedUpdates = [];
+
+    for (const product of existingProducts) {
+      try {
+        const { error: updateError } = await supabase
+          .from("products")
+          .update({
+            variants: filterVariants(product.variants),
+            images: product.images || [],
+            options: product.options || null,
+            tags: product.tags || [],
+            title: product.title,
+            description: product.description || "",
+            visible: product.visible || false,
+            updated_at: product.updated_at || new Date().toISOString(),
+          })
+          .eq("id", product.id);
+
+        if (updateError) {
+          console.error(
+            `Error updating product ${product.id} in Supabase:`,
+            updateError
+          );
+          failedUpdates.push({
+            id: product.id,
+            title: product.title,
+            error: updateError,
+          });
+        } else {
+          updatedProducts.push({ id: product.id, title: product.title });
+        }
+      } catch (err) {
+        console.error(`Error updating product ${product.id}:`, err);
+        failedUpdates.push({
+          id: product.id,
+          title: product.title,
+          error: String(err),
+        });
+      }
+    }
+
     // Revalidate related paths to update any stale data
     revalidatePath("/dashboard/products");
+    revalidatePath("/products");
 
     return NextResponse.json(
       {
@@ -188,8 +239,12 @@ export async function GET(request: Request) {
         new_products_count: newProducts.length,
         products_added: addedProducts.length,
         products_failed: failedProducts.length,
+        products_updated: updatedProducts.length,
+        updates_failed: failedUpdates.length,
         added_products: addedProducts,
         failed_products: failedProducts,
+        updated_products: updatedProducts,
+        failed_updates: failedUpdates,
       },
       { status: 200 }
     );

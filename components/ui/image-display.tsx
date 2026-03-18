@@ -27,7 +27,7 @@ export function ImageDisplay({
   defaultView = "side",
   hoverView = "context-1",
 }: ImageDisplayProps) {
-  console.log("ImageDisplay component rendered with images:", images);
+
 
   // Find the default image (front view)
   const defaultImage = useMemo(() => {

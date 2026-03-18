@@ -4,6 +4,7 @@ import {
   fetchFilteredProductsCount,
 } from "@/utils/queries/products";
 import { Variant } from "@/utils/supabase/types";
+import { getAvailableVariants } from "@/lib/utils";
 import { formatPrice } from "@/utils/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -34,12 +35,11 @@ const FilteredProducts = async ({
     }),
   ]);
 
-  // Helper function to get the lowest priced variant
+  // Helper function to get the lowest priced available variant
   const getLowestPriceVariant = (variants: Variant[]) => {
-    // the prices are in cents, so we need to convert them to dollars
-
-    if (variants.length === 0) return null;
-    return variants.reduce((lowest, current) => {
+    const available = getAvailableVariants(variants);
+    if (available.length === 0) return null;
+    return available.reduce((lowest, current) => {
       return current.price < lowest.price ? current : lowest;
     });
   };
