@@ -5,11 +5,11 @@ import CategoryDetailsSkeleton from '../_components/category-details-skeleton'
 import { Suspense } from 'react'
 
 const CategoryPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
-  const { slug } = await params
+ 
 
   return (
     <Suspense fallback={<CategoryDetailsSkeleton />}>
-      <CategoryDetails slug={slug} />
+      <CategoryDetails paramsPromise={params} />
     </Suspense>
   )
 }

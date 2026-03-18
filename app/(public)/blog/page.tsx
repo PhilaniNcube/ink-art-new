@@ -1,11 +1,13 @@
 import { getAllBlogPosts, getBlogPosts } from '@/utils/queries/blogs'
 import Image from 'next/image'
 import Link from 'next/link'
-import React from 'react'
+import { connection } from 'next/server'
+import React, { Suspense } from 'react'
 import { format } from 'date-fns'
 import BlogCard from '../_components/blog-card'
 
-const BlogPage = async () => {
+const BlogContent = async () => {
+    await connection()
 
     // Fetch the blog posts from the API
     const blogPosts = await getAllBlogPosts()
@@ -67,6 +69,14 @@ const BlogPage = async () => {
 
             </div>
         </div>
+    )
+}
+
+const BlogPage = () => {
+    return (
+        <Suspense fallback={<div className="container mx-auto py-6 text-center">Loading blog posts...</div>}>
+            <BlogContent />
+        </Suspense>
     )
 }
 

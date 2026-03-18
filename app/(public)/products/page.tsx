@@ -4,18 +4,32 @@ import FilteredProducts from "./_components/filtered-products";
 import ProductsSkeleton from "./_components/products-skeleton";
 import { SearchParams } from "@/utils/supabase/types";
 
-const ProductsPage = async (props: { searchParams: SearchParams }) => {
-  const searchParams = await props.searchParams;
+const ProductsResults = async ({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) => {
+  const resolvedSearchParams = await searchParams;
 
-  const categories = searchParams.categories;
-  const query = searchParams.query as string | undefined;
-  const page = searchParams.page ? parseInt(searchParams.page as string) : 1;
+  const categories = resolvedSearchParams.categories;
+  const query = resolvedSearchParams.query as string | undefined;
+  const page = resolvedSearchParams.page
+    ? parseInt(resolvedSearchParams.page as string)
+    : 1;
+
+  return <FilteredProducts categories={categories} query={query} page={page} />;
+};
+
+const ProductsPage = async (props: { searchParams: SearchParams }) => {
+  const { searchParams } = props;
 
   return (
     <div className="container mx-auto py-4">
-      <ProductsFilter />
+      <Suspense fallback={null}>
+        <ProductsFilter />
+      </Suspense>
       <Suspense fallback={<ProductsSkeleton />}>
-        <FilteredProducts categories={categories} query={query} page={page} />
+        <ProductsResults searchParams={searchParams} />
       </Suspense>
     </div>
   );

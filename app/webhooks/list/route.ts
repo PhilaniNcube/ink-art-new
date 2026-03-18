@@ -1,7 +1,9 @@
 // write an handler to create a new printify webhook for handling product updates
-import { NextResponse } from "next/server";
+import { connection, NextResponse } from "next/server";
 
 export async function GET(request: Request) {
+  await connection();
+
   const apiToken = process.env.PRINTIFY_WEBHOOKS_TOKEN;
   if (!apiToken) {
     console.error("PRINTIFY_API_TOKEN environment variable not set.");
@@ -23,6 +25,7 @@ export async function GET(request: Request) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiToken}`,
       },
+      cache: "no-store",
     });
 
     if (!res.ok) {

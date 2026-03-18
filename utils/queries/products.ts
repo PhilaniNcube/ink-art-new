@@ -1,5 +1,11 @@
-import { createClient } from "../supabase/server";
-import { PrintifyProduct } from "../supabase/types";
+import { cacheLife, cacheTag } from "next/cache";
+import { createAnonClient, createClient } from "../supabase/server";
+import { Database, PrintifyProduct } from "../supabase/types";
+
+export type FeaturedProduct = Pick<
+  Database["public"]["Tables"]["products"]["Row"],
+  "id" | "title" | "images" | "variants"
+>;
 
 export async function fetchPaginatedProducts(page: number, limit: number) {
   const supabase = await createClient();
@@ -57,20 +63,15 @@ export async function fetchAllProducts() {
 }
 
 export async function fetchFeaturedProducts(limit: number = 8) {
-  const supabase = await createClient();
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("products");
+
+  const supabase = createAnonClient();
 
   const { data, error } = await supabase
     .from("products")
-    .select(
-      `
-      *,
-      category(*),
-      product_categories(
-        category_id,
-        categories(id, title, slug)
-      )
-    `
-    )
+    .select("id, title, images, variants")
     .eq("featured", true)
     .order("title", { ascending: true })
     .limit(limit);
@@ -80,10 +81,10 @@ export async function fetchFeaturedProducts(limit: number = 8) {
     return [];
   }
 
-  return data;
+  return (data ?? []) as FeaturedProduct[];
 }
 
-export async function fetchFilteredProducts({
+export async function fetchFilteredProductsWithCount({
   categories,
   query,
   page = 1,
@@ -105,42 +106,21 @@ export async function fetchFilteredProducts({
 
   if (result.error) {
     console.error("Error fetching filtered products:", result.error);
-    return null;
+    return { products: null, totalCount: 0 };
   }
 
-  // Apply pagination to the result
-  const paginatedData = result.data
-    ? result.data.slice(offset, offset + limit)
-    : [];
+  const allData = result.data ?? [];
+  const paginatedData = allData.slice(offset, offset + limit);
 
-  return paginatedData;
-}
-
-// Get total count of filtered products for pagination
-export async function fetchFilteredProductsCount({
-  categories,
-  query,
-}: {
-  categories?: string;
-  query?: string;
-}) {
-  const supabase = await createClient();
-
-  const result = await supabase.rpc("get_filtered_products", {
-    category_slugs: categories ? categories : "",
-    title_search: query ? query : "",
-  });
-
-  if (result.error) {
-    console.error("Error fetching filtered products count:", result.error);
-    return 0;
-  }
-
-  return result.data ? result.data.length : 0;
+  return { products: paginatedData, totalCount: allData.length };
 }
 
 export async function fetchProductById(productId: string) {
-  const supabase = await createClient();
+  "use cache";
+  cacheLife({ revalidate: 120 });
+  cacheTag("products");
+
+  const supabase = createAnonClient();
 
   const { data, error } = await supabase
     .from("products")

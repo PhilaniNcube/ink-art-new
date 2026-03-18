@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { Suspense } from "react";
 import { RichText } from "@payloadcms/richtext-lexical/react";
 import { metadata } from "../../layout";
 import { notFound } from "next/navigation";
@@ -68,7 +68,7 @@ export async function generateMetadata({
   };
 }
 
-const BlogArticlePage = async ({
+const BlogArticleContent = async ({
   params,
 }: {
   params: Promise<{ id: number }>;
@@ -131,6 +131,26 @@ const BlogArticlePage = async ({
         </article>
       </div>
     </div>
+  );
+};
+
+const BlogArticlePage = ({
+  params,
+}: {
+  params: Promise<{ id: number }>;
+}) => {
+  return (
+    <Suspense
+      fallback={
+        <div className="container mx-auto px-4 py-12">
+          <div className="w-full max-w-4xl mx-auto">
+            <p className="text-sm text-muted-foreground">Loading article...</p>
+          </div>
+        </div>
+      }
+    >
+      <BlogArticleContent params={params} />
+    </Suspense>
   );
 };
 

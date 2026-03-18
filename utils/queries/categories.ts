@@ -1,7 +1,12 @@
-import { createClient } from "../supabase/server";
+import { cacheLife, cacheTag } from "next/cache";
+import { createAnonClient, createClient } from "../supabase/server";
 
 export async function fetchCategories() {
-  const supabase = await createClient();
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("categories");
+
+  const supabase = createAnonClient();
 
   const { data, error } = await supabase
     .from("categories")

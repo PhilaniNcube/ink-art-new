@@ -1,7 +1,9 @@
 import { notFound, redirect } from "next/navigation"
+import { connection } from "next/server"
 import Link from "next/link"
 import { format } from "date-fns"
 import { ArrowLeft, Download, ShoppingBag, Truck } from "lucide-react"
+import { Suspense } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -18,12 +20,12 @@ const formatCurrency = (amount: number) => {
   }).format(amount)
 }
 
-export default async function OrderPage({
+const OrderContent = async ({
   params,
 }: {
   params: Promise<{ id: string }>
-}) {
-
+}) => {
+  await connection()
 
   const { id } = await params
 
@@ -197,5 +199,17 @@ export default async function OrderPage({
         </Card>
       </div>
     </div>
+  )
+}
+
+export default function OrderPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  return (
+    <Suspense fallback={<div className="container py-10">Loading order details...</div>}>
+      <OrderContent params={params} />
+    </Suspense>
   )
 }

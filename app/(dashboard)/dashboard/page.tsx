@@ -1,4 +1,5 @@
 import React, { Suspense } from "react";
+import { connection } from "next/server";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchAllOrders, fetchOrdersAnalytics } from "@/utils/queries/orders";
 import { DashboardHeader } from "./_components/dashboard-header";
@@ -21,9 +22,9 @@ import ProductsTable from "./products/_components/products-table";
 import { OrdersContent } from "./_components/orders-content";
 import { getAllCategories } from "@/utils/queries/categories";
 
-export const dynamic = 'force-dynamic';
+const DashboardContent = async () => {
+  await connection();
 
-const DashboardHome = async () => {
   const revenueData = fetchOrdersAnalytics();
   const allOrdersData = fetchAllOrders();
   const productsData = fetchAllProducts();
@@ -134,6 +135,22 @@ const DashboardHome = async () => {
         </TabsContent>
       </Tabs>
     </main>
+  );
+};
+
+const DashboardHome = () => {
+  return (
+    <Suspense
+      fallback={
+        <main className="space-y-4">
+          <Skeleton className="h-10 w-56" />
+          <Skeleton className="h-8 w-80" />
+          <Skeleton className="h-[420px] w-full" />
+        </main>
+      }
+    >
+      <DashboardContent />
+    </Suspense>
   );
 };
 

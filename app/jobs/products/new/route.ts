@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { connection, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { z } from "zod";
 import { PrintifyProduct } from "@/utils/supabase/types";
@@ -73,6 +73,8 @@ async function fetchAllPrintifyProducts(): Promise<PrintifyProduct[]> {
 
 // Handle GET requests to this endpoint
 export async function GET(request: Request) {
+  await connection();
+
   try {
     // Parse query parameters
     const url = new URL(request.url);

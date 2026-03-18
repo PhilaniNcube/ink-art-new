@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Suspense } from 'react'
 
-export default async function Page({ searchParams }: { searchParams: Promise<{ error: string }> }) {
+const ErrorContent = async ({ searchParams }: { searchParams: Promise<{ error: string }> }) => {
   const params = await searchParams
 
   return (
@@ -22,5 +23,21 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
         </div>
       </div>
     </div>
+  )
+}
+
+export default function Page({ searchParams }: { searchParams: Promise<{ error: string }> }) {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+          <div className="w-full max-w-sm">
+            <p className="text-sm text-muted-foreground">Loading error details...</p>
+          </div>
+        </div>
+      }
+    >
+      <ErrorContent searchParams={searchParams} />
+    </Suspense>
   )
 }

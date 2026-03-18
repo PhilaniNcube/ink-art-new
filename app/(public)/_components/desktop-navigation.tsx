@@ -6,11 +6,12 @@ import Link from "next/link";
 import CartSheet from "@/components/cart/cart-sheet";
 import { UserDropdownMenu } from "@/components/user-dropdown-menu";
 import { Database } from "@/utils/supabase/types";
+import type { FeaturedProduct } from "@/utils/queries/products";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 
 interface DesktopNavigationProps {
   categoriesPromise: Promise<Database["public"]["Tables"]["categories"]["Row"][]>;
-  featuredProductsPromise: Promise<Database["public"]["Tables"]["products"]["Row"][]>;
+  featuredProductsPromise: Promise<FeaturedProduct[]>;
   userPromise: Promise<SupabaseUser | null>;
   isAdminPromise: Promise<boolean>;
 }

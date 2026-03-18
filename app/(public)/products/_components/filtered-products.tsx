@@ -1,8 +1,5 @@
 import { ImageDisplay } from "@/components/ui/image-display";
-import {
-  fetchFilteredProducts,
-  fetchFilteredProductsCount,
-} from "@/utils/queries/products";
+import { fetchFilteredProductsWithCount } from "@/utils/queries/products";
 import { Variant } from "@/utils/supabase/types";
 import { getAvailableVariants } from "@/lib/utils";
 import { formatPrice } from "@/utils/utils";
@@ -22,18 +19,13 @@ const FilteredProducts = async ({
   page?: number;
   limit?: number;
 }) => {
-  const [filteredProducts, totalCount] = await Promise.all([
-    fetchFilteredProducts({
+  const { products: filteredProducts, totalCount } =
+    await fetchFilteredProductsWithCount({
       categories: categories as string,
       query,
       page,
       limit,
-    }),
-    fetchFilteredProductsCount({
-      categories: categories as string,
-      query,
-    }),
-  ]);
+    });
 
   // Helper function to get the lowest priced available variant
   const getLowestPriceVariant = (variants: Variant[]) => {

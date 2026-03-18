@@ -1,6 +1,6 @@
 'use client';
 
-import { create } from 'zustand';
+import { create, type StateCreator } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
 export interface CartItem {
@@ -35,7 +35,7 @@ interface CartState {
 }
 
 export const useCartStore = create<CartState>()(
-  persist(
+  (persist as unknown as (initializer: StateCreator<CartState, [], []>, options: unknown) => StateCreator<CartState, [], []>)(
     (set, get) => ({
       items: [],
       isCartOpen: false,
@@ -124,7 +124,7 @@ export const useCartStore = create<CartState>()(
       name: 'farm-track-cart',
       storage: createJSONStorage(() => localStorage),
       // Only persist these fields to localStorage, not the methods
-      partialize: (state) => ({ items: state.items }),
+      partialize: (state: CartState) => ({ items: state.items }),
     }
   )
 );

@@ -5,7 +5,12 @@ import { formatPrice } from "@/utils/utils";
 import Link from "next/link";
 import React from "react";
 
-const CategoryDetails = async ({ slug }: { slug: string }) => {
+const CategoryDetails = async ({
+  paramsPromise,
+}: {
+  paramsPromise: Promise<{ slug: string }>;
+}) => {
+  const { slug } = await paramsPromise;
   const data = await fetchCategoryBySlug(slug);
 
   const category = data?.category;

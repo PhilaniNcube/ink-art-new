@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { connection, NextResponse } from "next/server";
 import { z } from "zod";
 
 // Define types for Printify API responses
@@ -59,6 +59,8 @@ const querySchema = z.object({
 });
 
 export async function GET(request: Request) {
+  await connection();
+
   try {
     // Get API key from environment variables
     const apiKey = process.env.PRINTIFY_API_TOKEN; // Use non-public variable

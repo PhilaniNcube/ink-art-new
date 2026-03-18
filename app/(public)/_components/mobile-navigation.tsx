@@ -8,13 +8,14 @@ import CartSheet from "@/components/cart/cart-sheet";
 import SearchSheet from "./search-sheet";
 import MobileSheet from "./mobile-sheet";
 import { Database } from "@/utils/supabase/types";
+import type { FeaturedProduct } from "@/utils/queries/products";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 
 interface MobileNavigationProps {
   userPromise: Promise<SupabaseUser | null>;
   isAdminPromise: Promise<boolean>;
   categoriesPromise: Promise<Database["public"]["Tables"]["categories"]["Row"][]>;
-  featuredProductsPromise: Promise<Database["public"]["Tables"]["products"]["Row"][]>;
+  featuredProductsPromise: Promise<FeaturedProduct[]>;
 }
 
 const MobileNavigation = async ({

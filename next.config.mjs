@@ -4,6 +4,7 @@ import { withPayload } from '@payloadcms/next/withPayload'
 const nextConfig = {
   /* config options here */
   reactCompiler: true,
+  cacheComponents: true,
   images: {
     minimumCacheTTL: 2678400,
     remotePatterns: [

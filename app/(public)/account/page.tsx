@@ -1,7 +1,9 @@
 import { LoginForm } from '@/components/login-form'
+import { connection } from 'next/server'
 import { currentUser } from '@/utils/queries/users'
 import { fetchUserProfile } from '@/utils/queries/profiles'
 import { fetchUserOrders } from '@/utils/queries/orders'
+import React, { Suspense } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 import { ProfileForm } from './_components/profile-form'
@@ -13,7 +15,9 @@ export const metadata = {
   description: 'Manage your account information, view order history, and update your profile.',
 }
 
-export default async function AccountPage() {
+const AccountContent = async () => {
+  await connection()
+
   // Get current user
   const user = await currentUser()
 
@@ -61,5 +65,13 @@ export default async function AccountPage() {
         </TabsContent>
       </Tabs>
     </div>
+  )
+}
+
+export default function AccountPage() {
+  return (
+    <Suspense fallback={<div className='container py-10'>Loading account...</div>}>
+      <AccountContent />
+    </Suspense>
   )
 }

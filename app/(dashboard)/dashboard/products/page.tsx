@@ -2,15 +2,16 @@ import {
   fetchAllProducts,
   fetchPrintifyProducts,
 } from "@/utils/queries/products";
-import React from "react";
+import { connection } from "next/server";
+import { Suspense } from "react";
 import ProductsTable from "./_components/products-table";
 import Link from "next/link";
 import { getAllCategories } from "@/utils/queries/categories";
 
-// Force dynamic rendering since we're using cookies via Supabase
-export const dynamic = "force-dynamic";
 
-const DashboardProducts = async () => {
+const DashboardProductsContent = async () => {
+  await connection();
+
   const fetchAllProductsData = fetchAllProducts();
   const fetchPrintifyProductsData = fetchPrintifyProducts();
   const fetchCategoriesData = getAllCategories();
@@ -46,6 +47,14 @@ const DashboardProducts = async () => {
         />
       </div>
     </div>
+  );
+};
+
+const DashboardProducts = () => {
+  return (
+    <Suspense fallback={<div>Loading products...</div>}>
+      <DashboardProductsContent />
+    </Suspense>
   );
 };
 

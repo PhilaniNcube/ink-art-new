@@ -1,10 +1,11 @@
 import { redirect } from 'next/navigation'
+import { Suspense } from 'react'
 
 import { LogoutButton } from '@/components/logout-button'
 import { createClient } from '@/utils/supabase/server'
 
 
-export default async function ProtectedPage() {
+const ProtectedContent = async () => {
   const supabase = await createClient()
 
   const { data, error } = await supabase.auth.getUser()
@@ -19,5 +20,13 @@ export default async function ProtectedPage() {
       </p>
       <LogoutButton />
     </div>
+  )
+}
+
+export default function ProtectedPage() {
+  return (
+    <Suspense fallback={<div className="flex h-svh w-full items-center justify-center">Loading account...</div>}>
+      <ProtectedContent />
+    </Suspense>
   )
 }

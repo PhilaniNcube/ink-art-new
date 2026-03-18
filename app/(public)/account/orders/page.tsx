@@ -1,14 +1,18 @@
 import { redirect } from "next/navigation"
+import { connection } from "next/server"
 import { fetchUserOrders } from "@/utils/queries/orders"
 import { currentUser } from "@/utils/queries/users"
 import { OrderHistory } from "../_components/order-history"
+import { Suspense } from "react"
 
 export const metadata = {
   title: 'Order History | Ink Art',
   description: 'View your past orders and their status.',
 }
 
-export default async function OrdersPage() {
+const OrdersContent = async () => {
+  await connection()
+
   // Get current user
   const user = await currentUser()
 
@@ -30,5 +34,13 @@ export default async function OrdersPage() {
 
       <OrderHistory orders={orders} />
     </div>
+  )
+}
+
+export default function OrdersPage() {
+  return (
+    <Suspense fallback={<div className="container py-10">Loading orders...</div>}>
+      <OrdersContent />
+    </Suspense>
   )
 }

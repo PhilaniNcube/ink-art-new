@@ -1,27 +1,8 @@
-import React, { Suspense } from "react";
 import Link from "next/link";
-import { Facebook, Instagram, Mail, Phone } from "lucide-react";
+import { Facebook, Instagram } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { Database } from "@/utils/supabase/types";
-import type { FeaturedProduct } from "@/utils/queries/products";
-import { CurrentYear } from "./current-year";
 
-interface FooterProps {
-  categoriesPromise?: Promise<
-    Database["public"]["Tables"]["categories"]["Row"][]
-  >;
-  featuredProductsPromise?: Promise<FeaturedProduct[]>;
-}
-
-const Footer = async ({
-  categoriesPromise,
-  featuredProductsPromise,
-}: FooterProps) => {
-  const [categories, featuredProducts] = await Promise.all([
-    categoriesPromise ?? Promise.resolve(undefined),
-    featuredProductsPromise ?? Promise.resolve(undefined),
-  ]);
-
+const FooterSkeleton = () => {
   return (
     <footer className="bg-background border-t">
       <div className="container mx-auto py-12 px-4 sm:px-6">
@@ -33,7 +14,6 @@ const Footer = async ({
               Premium quality art supplies for professional artists and
               enthusiasts.
             </p>
-            {/* Social Links */}
             <div className="flex space-x-4 pt-2">
               <Link
                 href="https://facebook.com"
@@ -61,34 +41,22 @@ const Footer = async ({
             <h3 className="text-lg font-semibold">Shop</h3>
             <ul className="space-y-2">
               <li>
-                <Link
-                  href="/products"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
+                <Link href="/products" className="text-muted-foreground hover:text-primary transition-colors">
                   All Products
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/categories"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
+                <Link href="/categories" className="text-muted-foreground hover:text-primary transition-colors">
                   Categories
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/shipping"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
+                <Link href="/shipping" className="text-muted-foreground hover:text-primary transition-colors">
                   Shipping Info
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/faq"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
+                <Link href="/faq" className="text-muted-foreground hover:text-primary transition-colors">
                   FAQ
                 </Link>
               </li>
@@ -100,26 +68,17 @@ const Footer = async ({
             <h3 className="text-lg font-semibold">About</h3>
             <ul className="space-y-2">
               <li>
-                <Link
-                  href="/about"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
+                <Link href="/about" className="text-muted-foreground hover:text-primary transition-colors">
                   Our Story
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/blog"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
+                <Link href="/blog" className="text-muted-foreground hover:text-primary transition-colors">
                   Blog
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/contact"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
+                <Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors">
                   Contact Us
                 </Link>
               </li>
@@ -130,12 +89,7 @@ const Footer = async ({
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Contact</h3>
             <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">
-                  info@inkart.store
-                </span>
-              </div>
+              <div className="h-4 w-32 bg-muted animate-pulse rounded" />
             </div>
           </div>
         </div>
@@ -144,30 +98,12 @@ const Footer = async ({
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            ©{" "}
-            <Suspense fallback={<span>...</span>}>
-              <CurrentYear />
-            </Suspense>{" "}
-            Ink Art. All rights reserved.
+            © ... Ink Art. All rights reserved.
           </p>
-          <div className="flex gap-4 text-sm text-muted-foreground">
-            <Link
-              href="/privacy-policy"
-              className="hover:text-primary transition-colors"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              href="/terms-of-service"
-              className="hover:text-primary transition-colors"
-            >
-              Terms of Service
-            </Link>
-          </div>
         </div>
       </div>
     </footer>
   );
 };
 
-export default Footer;
+export default FooterSkeleton;

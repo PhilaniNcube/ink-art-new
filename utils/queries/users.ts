@@ -1,36 +1,17 @@
 import { createClient } from "../supabase/server";
 
 export async function currentUser() {
-
     const supabase = await createClient();
 
-    // get the current user from the session
-    const { data: { session }, error } = await supabase.auth.getSession();
+    // getUser() validates the token server-side — no need to call getSession() first
+    // since the middleware already refreshes the session.
+    const { data: { user }, error } = await supabase.auth.getUser();
 
-    if (error) {
-        console.error("Error getting session:", error);
+    if (error || !user) {
         return null;
     }
 
-    if (!session) {
-        return null;
-    }
-
-    // get the user from the session
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-
-    if (userError) {
-        console.error("Error getting user:", userError);
-        return null;
-    }
-
-    if (!user) {
-        return null;
-    }
-
-    // get the user profile from the database
     return user;
-
 }
 
 

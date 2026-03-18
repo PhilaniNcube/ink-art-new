@@ -4,6 +4,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
+import type { FeaturedProduct } from '@/utils/queries/products'
 import { Database } from '@/utils/supabase/types'
 import { User as SupabaseUser } from '@supabase/supabase-js'
 import { BookOpen, ChevronRight, Grid3X3, Home, Menu, Phone, ShoppingBasket, User, Users, X } from 'lucide-react'
@@ -14,7 +15,7 @@ import React, { useState } from 'react'
 
 const MobileSheet = ({ user, isAdmin, categories, featuredProducts }: {
   user: SupabaseUser | null, isAdmin: boolean, categories: Database["public"]["Tables"]['categories']['Row'][]
-  featuredProducts: Database["public"]["Tables"]['products']['Row'][]
+  featuredProducts: FeaturedProduct[]
 }) => {
 
   const pathname = usePathname()

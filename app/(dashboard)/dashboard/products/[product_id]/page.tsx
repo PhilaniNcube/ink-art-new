@@ -2,26 +2,23 @@ import {
   fetchPrintifyProductById,
   fetchProductById,
 } from "@/utils/queries/products";
-import React from "react";
+import React, { Suspense } from "react";
+
 import ProductHeader from "../_components/product-header";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ProductDetailsSkeleton from "@/app/(public)/products/_components/product-details-skeleton";
+
 import ProductComponent from "../_components/product-component";
 
-export const dynamic = 'force-dynamic';
-
-const page = async ({
+const ProductDetailsContent = async ({
   params,
 }: {
   params: Promise<{ product_id: string }>;
 }) => {
   const { product_id } = await params;
 
-  // Fetch product details using the product_id
-
-  const product = await fetchProductById(product_id);
-
-  const printifyProduct = await fetchPrintifyProductById(product_id);
+  const [product, printifyProduct] = await Promise.all([
+    fetchProductById(product_id),
+    fetchPrintifyProductById(product_id),
+  ]);
 
   if (!product) {
     return <div>Error fetching product</div>;
@@ -35,4 +32,16 @@ const page = async ({
   );
 };
 
-export default page;
+const Page = ({
+  params,
+}: {
+  params: Promise<{ product_id: string }>;
+}) => {
+  return (
+    <Suspense fallback={<div className="p-6">Loading product...</div>}>
+      <ProductDetailsContent params={params} />
+    </Suspense>
+  );
+};
+
+export default Page;

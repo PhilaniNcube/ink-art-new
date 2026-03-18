@@ -1,4 +1,5 @@
 import { Database } from "@/utils/supabase/types";
+import type { FeaturedProduct } from "@/utils/queries/products";
 import React from "react";
 
 import Link from "next/link";
@@ -33,7 +34,7 @@ import Image from "next/image";
 
 type PageProps = {
   categories: Database["public"]["Tables"]["categories"]["Row"][];
-  featuredProducts: Database["public"]["Tables"]["products"]["Row"][];
+  featuredProducts: FeaturedProduct[];
 };
 
 const MegaMenu = ({ categories, featuredProducts }: PageProps) => {

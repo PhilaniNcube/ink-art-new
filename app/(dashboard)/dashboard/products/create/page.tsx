@@ -1,34 +1,19 @@
 import { PrintifyImageUpload } from "@/components/printify/printify-image-upload";
 import { PrintifyProductForm } from "@/components/printify/printify-product-form";
+import { connection } from "next/server";
 import {
   fetchBlueprintById,
-  fetchBlueprintProviders,
-  fetchPrintifyBlueprints,
-  fetchPrintProviders,
-  fetchPrintProvidersProducts,
   fetchProviderVariants,
 } from "@/utils/queries/printify";
 import { Suspense } from "react";
 
-export const dynamic = 'force-dynamic';
+const CreatePrintifyProductsContent = async () => {
+  await connection();
 
-const CreatePrintifyProducts = async () => {
-  // Fetch Printify blueprints
-
-  const bluePrintData = fetchBlueprintById(555); // Fetching a specific blueprint by ID (e.g., 555 for stretched canvas)
-  const providersData = fetchBlueprintProviders(555); // Fetching providers for the same blueprint
-  const providerVariantsData = fetchProviderVariants(1159, 105); // Fetching variants for the same blueprint
-  const printProvidersData = fetchPrintProviders(); // Fetching all print providers
-  const providerProductsData = fetchPrintProvidersProducts(105);
-
-  const [blueprint, providers, variants, printProviders, providersProducts] =
-    await Promise.all([
-      bluePrintData,
-      providersData,
-      providerVariantsData,
-      printProvidersData,
-      providerProductsData,
-    ]);
+  const [blueprint, variants] = await Promise.all([
+    fetchBlueprintById(555),
+    fetchProviderVariants(1159, 105),
+  ]);
 
   if (!blueprint) {
     return <div>No blueprint found.</div>;
@@ -44,6 +29,14 @@ const CreatePrintifyProducts = async () => {
         </div>
       </Suspense>
     </div>
+  );
+};
+
+const CreatePrintifyProducts = () => {
+  return (
+    <Suspense fallback={<div>Loading product setup...</div>}>
+      <CreatePrintifyProductsContent />
+    </Suspense>
   );
 };
 

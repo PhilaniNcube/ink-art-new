@@ -62,6 +62,7 @@ export function ImageDisplay({
         alt={altText}
         width={width}
         height={height}
+        loading="eager"
         className={`w-full transition-opacity duration-300 ${className} group-hover:opacity-0`}
         // priority={true}
       />

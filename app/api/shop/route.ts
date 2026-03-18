@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { connection, NextResponse } from 'next/server';
 
 interface PrintifyShop {
   id: number;
@@ -11,6 +11,8 @@ interface PrintifyShop {
  * Fetches shop information from Printify API
  */
 export async function GET() {
+  await connection();
+
   try {
     const apiToken = process.env.PRINTIFY_WEBHOOKS_TOKEN;
     
@@ -32,6 +34,7 @@ export async function GET() {
         'Authorization': `Bearer ${apiToken}`,
         'Content-Type': 'application/json',
       },
+      cache: 'no-store',
     });
 
     if (!response.ok) {

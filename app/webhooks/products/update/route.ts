@@ -1,7 +1,9 @@
 // write an handler to create a new printify webhook for handling product updates
-import { NextRequest, NextResponse } from "next/server";
+import { connection, NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
+  await connection();
+
   try {
     const res = await request.json();
 

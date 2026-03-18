@@ -1,5 +1,6 @@
 
 import { Button } from '@/components/ui/button';
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { CheckCircle } from 'lucide-react';
 import { notFound } from 'next/navigation';
@@ -12,25 +13,20 @@ export const metadata = {
   description: 'Thank you for your order',
 };
 
-// Function to get the order ID from search params
-export default async function OrderConfirmationPage({
+const OrderConfirmationContent = async ({
   searchParams,
 }: {
   searchParams: Promise<{ orderId?: string }>;
-}) {
-  // Await the searchParams since it's now a promise in NextJS 15
+}) => {
   const resolvedParams = await searchParams;
-  const orderId = resolvedParams.orderId || 'unknown';
+  const orderId = resolvedParams.orderId;
 
-  // Check if orderId is present
   if (!orderId) {
     notFound();
   }
 
-  // fetch the order details from the server
   const orderDetails = await fetchOrderById(orderId);
 
-  // Check if order details are valid
   if (!orderDetails) {
     notFound();
   }
@@ -80,5 +76,25 @@ export default async function OrderConfirmationPage({
         </div>
       </div>
     </div>
+  );
+};
+
+export default function OrderConfirmationPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ orderId?: string }>;
+}) {
+  return (
+    <Suspense
+      fallback={
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col items-center justify-center py-20">
+            <p className="text-sm text-muted-foreground">Loading order confirmation...</p>
+          </div>
+        </div>
+      }
+    >
+      <OrderConfirmationContent searchParams={searchParams} />
+    </Suspense>
   );
 }

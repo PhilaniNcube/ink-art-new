@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, Suspense } from "react";
 import DesktopNavigation from "./_components/desktop-navigation";
 import { Geist } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
@@ -7,6 +7,9 @@ import { admin, currentUser } from "@/utils/queries/users";
 import { fetchCategories } from "@/utils/queries/categories";
 import { fetchFeaturedProducts } from "@/utils/queries/products";
 import MobileNavigation from "./_components/mobile-navigation";
+import DesktopNavigationSkeleton from "./_components/desktop-navigation-skeleton";
+import MobileNavigationSkeleton from "./_components/mobile-navigation-skeleton";
+import FooterSkeleton from "./_components/footer-skeleton";
 import "../globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -26,9 +29,7 @@ const geistSans = Geist({
 });
 
 const PublicLayout = async ({ children }: { children: ReactNode }) => {
-  // Start data fetches but don't await — pass promises to components
-  // so they can be unwrapped closer to where the data is used.
-  // This enables partial pre-rendering and better caching.
+
   const categoriesPromise = fetchCategories();
   const featuredProductsPromise = fetchFeaturedProducts();
   const userPromise = currentUser();
@@ -39,24 +40,30 @@ const PublicLayout = async ({ children }: { children: ReactNode }) => {
       <body>
         <div suppressHydrationWarning className="bg-background text-foreground">
           <NuqsAdapter>
-            <DesktopNavigation
-              categoriesPromise={categoriesPromise}
-              featuredProductsPromise={featuredProductsPromise}
-              userPromise={userPromise}
-              isAdminPromise={adminPromise}
-            />
+            <Suspense fallback={<DesktopNavigationSkeleton />}>
+              <DesktopNavigation
+                categoriesPromise={categoriesPromise}
+                featuredProductsPromise={featuredProductsPromise}
+                userPromise={userPromise}
+                isAdminPromise={adminPromise}
+              />
+            </Suspense>
             {/* Add padding bottom on mobile to account for the mobile navigation bar */}
             <div className="pb-16 lg:pb-0">{children}</div>
-            <MobileNavigation
-              categoriesPromise={categoriesPromise}
-              featuredProductsPromise={featuredProductsPromise}
-              userPromise={userPromise}
-              isAdminPromise={adminPromise}
-            />
-            <Footer
-              categoriesPromise={categoriesPromise}
-              featuredProductsPromise={featuredProductsPromise}
-            />
+            <Suspense fallback={<MobileNavigationSkeleton />}>
+              <MobileNavigation
+                categoriesPromise={categoriesPromise}
+                featuredProductsPromise={featuredProductsPromise}
+                userPromise={userPromise}
+                isAdminPromise={adminPromise}
+              />
+            </Suspense>
+            <Suspense fallback={<FooterSkeleton />}>
+              <Footer
+                categoriesPromise={categoriesPromise}
+                featuredProductsPromise={featuredProductsPromise}
+              />
+            </Suspense>
           </NuqsAdapter>
         </div>
       </body>
