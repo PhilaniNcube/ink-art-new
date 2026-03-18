@@ -13,9 +13,7 @@ export function formatCurrency(value: number): string {
   }).format(value / 100);
 }
 
-/**
- * Filters variants to only include those that are available, enabled, and in stock.
- */
+
 export function getAvailableVariants(variants: Variant[]): Variant[] {
   return variants.filter(
     (v) => v.is_available && v.is_enabled
