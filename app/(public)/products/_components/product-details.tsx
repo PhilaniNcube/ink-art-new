@@ -7,7 +7,7 @@ import ProductDescription from "./product-description";
 import { fetchProductById } from "@/utils/queries/products";
 
 const ProductDetails = async ({ paramsPromise }: { paramsPromise: Promise<{ product_id: string }> }) => {
-  
+
   const { product_id } = await paramsPromise;
   const product = await fetchProductById(product_id);
 
@@ -37,18 +37,27 @@ const ProductDetails = async ({ paramsPromise }: { paramsPromise: Promise<{ prod
         </span>
         <span className="text-gray-700">{product.title}</span>
       </nav>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="col-span-1 lg:col-span-2 border p-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+        <div>
           <ProductImages images={product.images} />
         </div>
-        <div className="col-span-1 oveflow-x-hidden">
+        <div className="md:py-2">
           <ProductDescription product={product} />
-          <h2 className="text-2xl md:text-3xl mt-4">Description</h2>
-          {/* dangerously set innerHtml using the product.description */}
-          <div
-            className="mt-4 text-xs max-w-[500px] overflow-hidden"
-            dangerouslySetInnerHTML={{ __html: product.description }}
-          />
+          {/* Render description with tables stripped out */}
+          {product.description && (() => {
+            const cleaned = product.description
+              .replace(/<table[\s\S]*?<\/table>/gi, "")
+              .trim();
+            return cleaned ? (
+              <>
+                <h2 className="text-lg font-semibold mt-8 mb-3">Description</h2>
+                <div
+                  className="prose prose-sm max-w-none text-muted-foreground"
+                  dangerouslySetInnerHTML={{ __html: cleaned }}
+                />
+              </>
+            ) : null;
+          })()}
         </div>
       </div>
     </div>

@@ -6,14 +6,13 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { formatCurrency, getAvailableVariants } from "@/lib/utils";
-
 import { Database } from "@/utils/supabase/types";
-import { Separator } from "@radix-ui/react-separator";
-import { BarChart2, Code, RulerIcon } from "lucide-react";
 import { useQueryState } from "nuqs";
-
 import React from "react";
 
 const ProductDescription = ({
@@ -21,106 +20,107 @@ const ProductDescription = ({
 }: {
   product: Database["public"]["Tables"]["products"]["Row"];
 }) => {
-  // Filter to only show available variants
   const availableVariants = getAvailableVariants(product.variants || []);
 
-  // Safety check for variants
   if (availableVariants.length === 0) {
     return (
-      <div>
-        <h1 className="text-2xl md:text-3xl">{product.title}</h1>
-        <p className="text-gray-500 mt-4">
+      <div className="space-y-3">
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">
+          {product.title}
+        </h1>
+        <p className="text-muted-foreground">
           No variants available for this product.
         </p>
       </div>
     );
   }
 
-  // Use nuqs to manage the selected variant in URL state
   const [selectedVariantId, setSelectedVariantId] = useQueryState("variant", {
     defaultValue: availableVariants[0]?.id?.toString() || "",
   });
 
-  // Find the selected variant based on the URL parameter
   const selectedProductVariant = React.useMemo(() => {
     const variant = availableVariants.find(
-      (variant) => variant.id.toString() === selectedVariantId
+      (v) => v.id.toString() === selectedVariantId
     );
     return variant || availableVariants[0];
   }, [selectedVariantId, availableVariants]);
 
   return (
-    <div>
-      <h1 className="text-2xl md:text-3xl">{product.title}</h1>
-      {/* Display the different product variants using select components */}
-      <div className="mt-4">
-        <h2 className="text-lg">Variants</h2>
-        <Select
-          value={selectedProductVariant?.id?.toString() || ""}
-          onValueChange={(value) => {
-            const selectedVariant = product.variants.find(
-              (variant) => variant.id.toString() === value
-            );
-            if (selectedVariant) {
-              setSelectedVariantId(selectedVariant.id.toString());
-            }
-          }}
-        >
-          <SelectTrigger className="w-full mt-2 hover:border-gray-300 hover:bg-gray-50">
-            <span className="text-gray-500">
-              {selectedProductVariant.title}
-            </span>
-            <span className="text-gray-500">
-              {formatCurrency(selectedProductVariant.price)}
-            </span>
-          </SelectTrigger>
-          <SelectContent className="w-full">
-            {availableVariants.map((variant) => (
-              <SelectItem
-                key={variant.id}
-                value={variant.id.toString()}
-                className="w-full my-2"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-500">{variant.title}</span>
-                  <span className="text-gray-500">
-                    {formatCurrency(variant.price)}
-                  </span>
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+    <div className="space-y-6">
+      {/* Title */}
+      <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">
+        {product.title}
+      </h1>
 
-      <Separator className="my-4" />
-      <div className="w-full">
-        <h3 className="text-2xl md:text-4xl font-medium text-zinc-700">
+      {/* Price */}
+      <div className="flex items-center gap-3">
+        <span className="text-3xl font-bold">
           {formatCurrency(selectedProductVariant.price)}
-        </h3>
-
-        {/* the selected variant has an id, that is also on the image object, filter the images array to display the images that match the selectedVariant ID  */}
-
-        <div className="flex flex-wrap gap-4 items-center mt-2">
-          {product.images
-            .filter((image) => image.variant_id === selectedProductVariant.id)
-            .map((image) => (
-              <img
-                key={image.src}
-                src={image.src}
-                alt={image.position}
-                className="w-28 object-cover"
-              />
-            ))}
-        </div>
-
-        <AddToCartButton
-          product={product}
-          variant={selectedProductVariant}
-          quantity={1}
-          className="mt-4"
-        />
+        </span>
+        {availableVariants.length > 1 && (
+          <Badge variant="secondary" className="text-xs">
+            {availableVariants.length} options
+          </Badge>
+        )}
       </div>
+
+      <Separator />
+
+      {/* Variant selector */}
+      {availableVariants.length > 1 && (
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-muted-foreground">
+            Select variant
+          </label>
+          <Select
+            value={selectedProductVariant?.id?.toString() || ""}
+            onValueChange={(value) => {
+              const selectedVariant = product.variants.find(
+                (variant) => variant.id.toString() === value
+              );
+              if (selectedVariant) {
+                setSelectedVariantId(selectedVariant.id.toString());
+              }
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue>
+                <span className="flex items-center justify-between gap-4">
+                  <span>{selectedProductVariant.title}</span>
+                  <span className="text-muted-foreground">
+                    {formatCurrency(selectedProductVariant.price)}
+                  </span>
+                </span>
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {availableVariants.map((variant) => (
+                <SelectItem
+                  key={variant.id}
+                  value={variant.id.toString()}
+                  className="py-2.5"
+                >
+                  <span className="flex items-center justify-between gap-8 w-full">
+                    <span>{variant.title}</span>
+                    <span className="text-muted-foreground">
+                      {formatCurrency(variant.price)}
+                    </span>
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
+      {/* Add to cart */}
+      <AddToCartButton
+        product={product}
+        variant={selectedProductVariant}
+        quantity={1}
+        className="w-full"
+      />
     </div>
   );
 };

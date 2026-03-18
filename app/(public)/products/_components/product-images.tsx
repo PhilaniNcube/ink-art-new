@@ -13,24 +13,16 @@ const ProductImages = ({ images }: { images: ProductImage[] }) => {
 
   // Filter images based on selected variant
   const filteredImages = React.useMemo(() => {
-;
-
     if (!selectedVariantId || !images || images.length === 0) {
-  
       return images || [];
     }
 
-    const variantImages = images.filter((image) => {
-  
-      return image.variant_ids?.includes(parseInt(selectedVariantId));
-    });
-
- 
+    const variantImages = images.filter((image) =>
+      image.variant_ids?.includes(parseInt(selectedVariantId))
+    );
 
     // If no images match the variant, return all images as fallback
-    const result = variantImages.length > 0 ? variantImages : images;
-   
-    return result;
+    return variantImages.length > 0 ? variantImages : images;
   }, [images, selectedVariantId]);
 
   const [selectedImage, setSelectedImage] = React.useState<ProductImage | null>(
@@ -43,8 +35,6 @@ const ProductImages = ({ images }: { images: ProductImage[] }) => {
       setSelectedImage(filteredImages[0]);
     }
   }, [filteredImages]);
-
-
 
   if (!filteredImages || filteredImages.length === 0) {
     return <p>No images available</p>;
