@@ -37,6 +37,7 @@ const ProductDescription = ({
 
   const [selectedVariantId, setSelectedVariantId] = useQueryState("variant", {
     defaultValue: availableVariants[0]?.id?.toString() || "",
+    shallow: true,
   });
 
   const selectedProductVariant = React.useMemo(() => {

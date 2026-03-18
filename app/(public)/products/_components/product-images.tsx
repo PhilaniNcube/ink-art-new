@@ -6,9 +6,10 @@ import React from "react";
 import { useQueryState } from "nuqs";
 
 const ProductImages = ({ images }: { images: ProductImage[] }) => {
-  // Get the selected variant from URL search params
+  // Get the selected variant from URL search params (shallow to avoid server roundtrip)
   const [selectedVariantId] = useQueryState("variant", {
     defaultValue: "",
+    shallow: true,
   });
 
   // Filter images based on selected variant
@@ -25,23 +26,19 @@ const ProductImages = ({ images }: { images: ProductImage[] }) => {
     return variantImages.length > 0 ? variantImages : images;
   }, [images, selectedVariantId]);
 
-  const [selectedImage, setSelectedImage] = React.useState<ProductImage | null>(
+  // Track which image the user clicked; derived state resets when variant changes
+  const [selectedImageSrc, setSelectedImageSrc] = React.useState<string | null>(
     null
   );
-
-  // Update selected image when filtered images change
-  React.useEffect(() => {
-    if (filteredImages && filteredImages.length > 0) {
-      setSelectedImage(filteredImages[0]);
-    }
-  }, [filteredImages]);
 
   if (!filteredImages || filteredImages.length === 0) {
     return <p>No images available</p>;
   }
 
-  // Use the first filtered image if no image is selected yet
-  const displayImage = selectedImage || filteredImages[0];
+  // Derive display image: use clicked thumbnail if still in filtered set, otherwise first
+  const displayImage =
+    filteredImages.find((img) => img.src === selectedImageSrc) ||
+    filteredImages[0];
 
   return (
     <div className="w-full flex flex-col gap-4">
@@ -69,7 +66,7 @@ const ProductImages = ({ images }: { images: ProductImage[] }) => {
                 borderColor:
                   displayImage.src === image.src ? "#3b82f6" : "#e5e7eb",
               }}
-              onClick={() => setSelectedImage(image)}
+              onClick={() => setSelectedImageSrc(image.src)}
             >
               <Image
                 width={80}
