@@ -4,7 +4,7 @@ import { OrderConfirmationEmail } from '@/emails/order-confirmation';
 import { AdminOrderNotificationEmail } from '@/emails/admin-order-notification';
 
 const FROM_EMAIL = 'Ink Art <info@inkart.store>';
-const ADMIN_EMAIL = 'info@inkart.store';
+const ADMIN_EMAIL = 'khibanyakallo@gmail.com';
 
 interface OrderEmailData {
   firstName: string;
