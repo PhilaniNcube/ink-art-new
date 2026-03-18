@@ -2,6 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
+import { sendOrderEmails } from "@/lib/emails";
 
 // Function to create a PayPal order
 export async function createPayPalOrder(orderId: string) {
@@ -82,6 +83,7 @@ export async function createPayPalOrder(orderId: string) {
 export async function updateOrderAfterPayment(orderId: string, paypalOrderId: string) {
   try {
     const supabase = await createClient();
+    const paidAt = new Date().toISOString();
 
     // Update order in the database
     const { error } = await supabase
@@ -89,13 +91,43 @@ export async function updateOrderAfterPayment(orderId: string, paypalOrderId: st
       .update({
         paid: true,
         payment_id: paypalOrderId,
-        paid_at: new Date().toISOString()
+        paid_at: paidAt,
       })
       .eq('id', orderId);
 
     if (error) {
       console.error('Error updating order payment status:', error);
       return { success: false, error: 'Failed to update payment status' };
+    }
+
+    // Fetch full order details for email
+    const { data: order } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('id', orderId)
+      .single();
+
+    if (order) {
+      // Send emails without blocking the response
+      sendOrderEmails({
+        firstName: order.first_name,
+        lastName: order.last_name,
+        email: order.email,
+        phone: order.phone,
+        orderId: order.id,
+        orderItems: order.order_items,
+        subtotal: order.subtotal ?? 0,
+        shipping: order.shipping ?? 0,
+        total: order.total,
+        paymentId: paypalOrderId,
+        address: order.address,
+        city: order.city,
+        state: order.state,
+        postalCode: order.postal_code,
+        paidAt,
+      }).catch((err) => {
+        console.error('Failed to send order emails:', err);
+      });
     }
 
     // Revalidate paths
